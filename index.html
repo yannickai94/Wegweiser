@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Abzweig">
+<meta name="theme-color" content="#141619">
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAC8UlEQVR42u3dMW7yMBiAYRPlAB0QEurAhTpxUKZeiKFi7RE6sFZRSGxjf37e/f8b4YcPJy3J4Xg6J+m/Ji+B4BAcgkNwCA7BITgEh+AQHBIcgkNwCA7BITgEh+AQHIJDgkNwaHtzof/3fnt4cWt2ueb//tEh75eamIikZCIjWBlXIc/kwCLkCJnIMEJK4SAjsA+nsiqDw9iIPTy2b0jX/9TPrw+LVKKf79+im9O56NFjUeHlXU+kFRxYBCAylfhMIeNdRPLuPJytqCIOY6PN4dHchnTDvlrtvAmnCkdMRrX3W14xk5kxwnUOl88Fh+AQHE6k4agogw84lmYGH3AsfZrwAYfg2LQJNTxGx7EsgI9xcaxZez5GxLF+1fkYC8er683HKDi2rTQfTmU1MI49A8DwiIxj/+ryERNHrnXlIxqOvCvKRxwcJdaSjwg4yq0iH33jKL1+fLjOoXA46rytDY/+cNRcMz56wlF/tfhI7/oidSrwRb+XltO3Mm1IBYfgEByCQ3AIDsEhOCQ4BIfgEByCQ3AIDsEhOASHBIfgEByCQ3AIjuTRjXDwAYfC+YCjuI9+icBhhMDBBxx8wGELAocRAgcfcKgzH3DwkTq7Ydw4y/A8sDbvZ2dysAsHH3DwAYerZHAYIXCoTR9wpH7v/g4HGclFMDX3dAeTgww4yICDDHuO1l/99SeiLT9CyuQwMOAgAw4y4CDDhhQLk4MMOMhIcCjI87DtObAwOciAgww4yIBDcAgOOZX1uW5yCA7BIcEhOASH4FBMHDEeS5OGvE3DVOHCFB/VZOS9MDi74abqfay4qp2i/D7BhlS5cVyuZ8Ojo7GxvF619xzPY7XV6Pq303OF40ak0z9aOBxP583/+H57WKH22/aZsndDuvmnqn0ZzlZUEofhEXVs5JkcfISUsXdDan8alUX+PYcREklG5slhisQwURyHnK0IDsEhwSE4BIfgEByCQ3AIDsEhOCQ4BIfgEByCQ3AIDsEhODREf/EDx6TGCNxOAAAAAElFTkSuQmCC">
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAC8UlEQVR42u3dMW7yMBiAYRPlAB0QEurAhTpxUKZeiKFi7RE6sFZRSGxjf37e/f8b4YcPJy3J4Xg6J+m/Ji+B4BAcgkNwCA7BITgEh+AQHBIcgkNwCA7BITgEh+AQHIJDgkNwaHtzof/3fnt4cWt2ueb//tEh75eamIikZCIjWBlXIc/kwCLkCJnIMEJK4SAjsA+nsiqDw9iIPTy2b0jX/9TPrw+LVKKf79+im9O56NFjUeHlXU+kFRxYBCAylfhMIeNdRPLuPJytqCIOY6PN4dHchnTDvlrtvAmnCkdMRrX3W14xk5kxwnUOl88Fh+AQHE6k4agogw84lmYGH3AsfZrwAYfg2LQJNTxGx7EsgI9xcaxZez5GxLF+1fkYC8er683HKDi2rTQfTmU1MI49A8DwiIxj/+ryERNHrnXlIxqOvCvKRxwcJdaSjwg4yq0iH33jKL1+fLjOoXA46rytDY/+cNRcMz56wlF/tfhI7/oidSrwRb+XltO3Mm1IBYfgEByCQ3AIDsEhOCQ4BIfgEByCQ3AIDsEhOASHBIfgEByCQ3AIjuTRjXDwAYfC+YCjuI9+icBhhMDBBxx8wGELAocRAgcfcKgzH3DwkTq7Ydw4y/A8sDbvZ2dysAsHH3DwAYerZHAYIXCoTR9wpH7v/g4HGclFMDX3dAeTgww4yICDDHuO1l/99SeiLT9CyuQwMOAgAw4y4CDDhhQLk4MMOMhIcCjI87DtObAwOciAgww4yIBDcAgOOZX1uW5yCA7BIcEhOASH4FBMHDEeS5OGvE3DVOHCFB/VZOS9MDi74abqfay4qp2i/D7BhlS5cVyuZ8Ojo7GxvF619xzPY7XV6Pq303OF40ak0z9aOBxP583/+H57WKH22/aZsndDuvmnqn0ZzlZUEofhEXVs5JkcfISUsXdDan8alUX+PYcREklG5slhisQwURyHnK0IDsEhwSE4BIfgEByCQ3AIDsEhOCQ4BIfgEByCQ3AIDsEhODREf/EDx6TGCNxOAAAAAElFTkSuQmCC">
+<title>Abzweig</title>
+<style>
+:root{
+  --asph:#141619;--asph2:#1e2125;--asph3:#2b2f34;--line:#353a40;
+  --y:#f5c400;--blue:#0a5aa6;--wh:#f3f2ec;--brown:#6e4325;--ink:#101010;
+  --txt:#ebe9e3;--mut:#979da4;--org:#ff6b1a;--grn:#33b073;--red:#e5484d;
+  --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
+  --din:"DIN Alternate","DIN Condensed","Roboto Condensed","Arial Narrow",system-ui,sans-serif;
+  --sky1:#4f8fcc;--sky2:#cfe3f3;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--asph);color:var(--txt);font-family:-apple-system,system-ui,sans-serif;overscroll-behavior:none}
+body{-webkit-user-select:none;user-select:none;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
+#app{min-height:100dvh}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+@keyframes pop{from{opacity:0;transform:translateY(14px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes lane{to{stroke-dashoffset:-64}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--org)}50%{box-shadow:0 0 0 7px rgba(255,107,26,.45)}}
+
+/* ---------- Home ---------- */
+.home{min-height:100dvh;padding:calc(var(--st) + 18px) 16px calc(var(--sb) + 30px);
+  background:radial-gradient(120% 60% at 50% 0%,#24282d 0%,var(--asph) 60%)}
+.logo{background:var(--y);border-radius:16px;padding:6px;box-shadow:0 14px 34px rgba(0,0,0,.5);animation:pop .4s ease}
+.logo-in{border:3px solid var(--ink);border-radius:11px;padding:14px 16px;color:var(--ink);display:flex;align-items:center;gap:14px}
+.logo svg{width:54px;height:54px;flex:none}
+.logo h1{font-family:var(--din);font-size:42px;letter-spacing:1.5px;line-height:1}
+.logo p{font-size:13.5px;font-weight:600;opacity:.78;margin-top:5px;line-height:1.3}
+.sec{margin-top:26px}
+.sec h2{font-family:var(--din);font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--mut);margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline}
+.sec h2 span{letter-spacing:0;text-transform:none;font-size:13px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lv{background:var(--y);color:var(--ink);border-radius:11px;padding:4px;text-align:left;transition:transform .12s}
+.lv:active{transform:scale(.97)}
+.lv-in{border:2px solid var(--ink);border-radius:8px;padding:8px 10px;min-height:104px;display:flex;flex-direction:column;gap:1px}
+.lv .no{font-family:var(--din);font-size:12px;letter-spacing:1px;opacity:.65}
+.lv .a,.lv .b{font-family:var(--din);font-size:18px;line-height:1.08;overflow-wrap:anywhere}
+.lv .via{font-size:13px;line-height:1;opacity:.6}
+.lv .st{margin-top:auto;font-size:15px;letter-spacing:2px;padding-top:4px}
+.lv.locked{background:var(--asph3);color:#5d6268}
+.lv.locked .lv-in{border-color:#41464c}
+.lv.next{animation:pulse 1.8s ease-in-out infinite}
+.endless{background:var(--blue);color:#fff;border-radius:13px;padding:5px;width:100%;text-align:left}
+.endless-in{border:2.5px solid #fff;border-radius:9px;padding:14px;display:flex;align-items:center;gap:14px}
+.endless b{font-family:var(--din);font-size:22px;display:block}
+.endless small{font-size:13px;opacity:.85}
+.endless.locked{background:var(--asph3);color:#666}
+.endless.locked .endless-in{border-color:#444}
+.shield{background:var(--blue);color:#fff;font-family:var(--din);font-size:20px;padding:6px 10px;border-radius:8px;box-shadow:inset 0 0 0 2.5px #fff;flex:none}
+.album{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:var(--brown);color:#fff;font-family:var(--din);font-size:13px;padding:6px 9px;border-radius:6px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.85)}
+.chip.no{background:var(--asph3);color:#5d6268;box-shadow:inset 0 0 0 1.5px #41464c}
+.reset{margin-top:30px;color:var(--mut);font-size:13px;width:100%;padding:10px}
+.reset.arm{color:var(--red);font-weight:700}
+
+/* ---------- Game ---------- */
+.game{height:100dvh;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.hud{background:var(--asph);padding:calc(var(--st) + 8px) 12px 10px;display:grid;gap:8px;border-bottom:1px solid var(--line);z-index:5}
+.hud-top{display:flex;align-items:center;gap:10px}
+.ib{width:38px;height:38px;border-radius:11px;background:var(--asph3);display:grid;place-items:center;flex:none}
+.ib svg{width:18px;height:18px}
+.ib.arm{background:var(--red)}
+.ziel{flex:1;min-width:0;display:flex;align-items:center;gap:8px}
+.ziel small{font-size:10.5px;color:var(--mut);letter-spacing:1.2px;text-transform:uppercase;font-weight:700}
+.ort{background:var(--y);color:var(--ink);font-family:var(--din);border-radius:6px;padding:3px;display:inline-block;max-width:100%;min-width:0}
+.ort>span{display:block;border:2px solid var(--ink);border-radius:4px;padding:3px 10px 2px;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.navi{background:var(--asph3);border-radius:11px;height:38px;padding:0 11px;font-size:13px;font-weight:700;display:flex;gap:6px;align-items:center;flex:none}
+.navi svg{width:17px;height:17px}
+.navi[disabled]{opacity:.35}
+.tank{display:flex;align-items:center;gap:9px;font-size:13px;font-variant-numeric:tabular-nums}
+.tank svg{width:17px;height:17px;flex:none;color:var(--mut)}
+.bar{flex:1;height:10px;background:var(--asph3);border-radius:6px;overflow:hidden}
+.bar i{display:block;height:100%;border-radius:6px;transition:width .6s ease,background .6s}
+.tank b{min-width:92px;text-align:right}
+.meta{display:flex;justify-content:space-between;font-size:12px;color:var(--mut)}
+
+.scene{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;position:relative;background:linear-gradient(180deg,var(--sky1) 0%,var(--sky2) 78%,#b9c7a5 100%);transition:background 1s}
+.scene-in{position:relative;min-height:100%;padding:16px 14px calc(var(--sb) + 130px);display:flex;flex-direction:column;align-items:center;gap:14px}
+.trees{position:absolute;left:0;right:0;bottom:0;height:260px;pointer-events:none;z-index:0;opacity:.55}
+.trees svg{width:100%;height:100%}
+.ground{position:absolute;left:0;right:0;bottom:0;height:90px;background:linear-gradient(180deg,#7d6a45,#4f4430);z-index:0}
+.posts{position:absolute;top:60px;bottom:40px;left:50%;width:min(440px,calc(100% - 28px));transform:translateX(-50%);pointer-events:none;z-index:1}
+.posts i{position:absolute;top:0;bottom:0;width:9px;border-radius:2px;background:linear-gradient(90deg,#7d838a,#dfe3e7 45%,#737980)}
+.posts i:first-child{left:22%}.posts i:last-child{right:22%}
+.here{position:relative;z-index:2;text-align:center}
+.here small{display:block;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:700;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.5);margin-bottom:5px}
+.ortstafel{background:var(--y);color:var(--ink);border-radius:9px;padding:5px;box-shadow:0 8px 20px rgba(0,0,0,.25);display:inline-block}
+.ortstafel>span{display:block;border:3px solid var(--ink);border-radius:6px;padding:8px 22px 6px;font-family:var(--din);font-size:30px;line-height:1}
+.note{position:relative;z-index:2;font-size:12.5px;color:#fff;background:rgba(10,20,35,.45);padding:6px 11px;border-radius:20px;backdrop-filter:blur(6px)}
+
+.sign{position:relative;z-index:2;width:100%;max-width:440px;border-radius:12px;padding:5px;box-shadow:0 10px 24px rgba(0,0,0,.28);animation:pop .35s ease both}
+.sign-in{border-radius:8px;border:3px solid;padding:6px;display:flex;flex-direction:column}
+.s-yellow{background:var(--y);color:var(--ink)}.s-yellow .sign-in{border-color:var(--ink)}
+.s-white{background:var(--wh);color:var(--ink)}.s-white .sign-in{border-color:var(--ink)}
+.s-blue{background:var(--blue);color:#fff}.s-blue .sign-in{border-color:#fff}
+.s-brown{background:var(--brown);color:#fff}.s-brown .sign-in{border-color:#fff}
+.s-small{max-width:330px}
+.sign-h{font-family:var(--din);font-size:14px;letter-spacing:1.5px;padding:3px 6px 6px;text-transform:uppercase;opacity:.9}
+.row{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:7px;text-align:left;min-height:58px;width:100%;transition:transform .12s,box-shadow .15s;position:relative}
+.row+.row{margin-top:6px}
+.row+.row::before{content:"";position:absolute;left:4px;right:4px;top:-4px;height:2px;background:currentColor;opacity:.85;border-radius:2px}
+.row.inset+.row::before,.row+.row.inset::before{display:none}
+.row:active{transform:scale(.98)}
+.row.inset{background:var(--blue);color:#fff;box-shadow:inset 0 0 0 2px #fff}
+.row.sel{box-shadow:0 0 0 4px var(--org);background:rgba(255,107,26,.13)}
+.row.inset.sel{box-shadow:inset 0 0 0 2px #fff,0 0 0 4px var(--org);background:#0c4f91}
+.arr{width:40px;height:40px;flex:none}
+.rt .arr{order:3}
+.names{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.nm{display:flex;align-items:baseline;gap:8px;font-family:var(--din);font-size:22px;line-height:1.08}
+.nm span{flex:1;min-width:0;overflow-wrap:anywhere}
+.nm em{font-style:normal;font-size:16px;opacity:.85;font-variant-numeric:tabular-nums}
+.bd{font-family:var(--din);font-size:15px;padding:3px 7px 2px;border-radius:5px;flex:none;white-space:nowrap;align-self:center}
+.bd-a{background:var(--blue);color:#fff;box-shadow:inset 0 0 0 2px #fff,0 0 0 1px var(--blue)}
+.bd-b{background:var(--y);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.brown-in{display:flex;align-items:center;gap:12px;padding:8px 10px}
+.brown-in svg{width:38px;height:38px;flex:none}
+.brown-in b{font-family:var(--din);font-size:22px;font-weight:400;line-height:1.1}
+
+.dock{position:absolute;left:0;right:0;bottom:0;padding:12px 14px calc(var(--sb) + 12px);background:rgba(20,22,25,.93);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;gap:12px;align-items:center;z-index:6;border-top:1px solid var(--line)}
+.dock .info{flex:1;min-width:0;font-size:14px;line-height:1.35}
+.dock .info b{font-weight:700}
+.dock .hint{color:var(--mut)}
+.warn{color:var(--red);font-weight:700;display:block}
+.go{background:var(--org);color:#fff;font-weight:800;font-size:17px;padding:14px 20px;border-radius:14px;flex:none;display:flex;gap:6px;align-items:center}
+.go svg{width:18px;height:18px}
+.go[disabled]{background:var(--asph3);color:#666}
+
+/* ---------- Overlays ---------- */
+.ov{position:fixed;inset:0;background:rgba(8,9,10,.74);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px;z-index:20;animation:fade .2s}
+.card{background:var(--asph2);border-radius:22px;padding:22px 20px 20px;width:100%;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,.5);animation:pop .3s ease;border:1px solid var(--line)}
+.card .lvl{font-family:var(--din);font-size:13px;letter-spacing:2px;color:var(--mut);text-transform:uppercase;text-align:center}
+.route{display:flex;flex-direction:column;align-items:center;gap:6px;margin:14px 0 16px}
+.route .ort>span{font-size:24px;padding:6px 16px 4px}
+.route svg{width:22px;height:22px;color:var(--mut)}
+.facts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.facts div{background:var(--asph3);border-radius:14px;padding:12px;text-align:center}
+.facts b{display:block;font-family:var(--din);font-size:24px;font-weight:400}
+.facts span{font-size:12px;color:var(--mut)}
+.tip{font-size:14px;line-height:1.45;color:#c9c7c1;margin:16px 2px 18px}
+.primary{width:100%;background:var(--org);color:#fff;font-weight:800;font-size:17px;padding:15px;border-radius:15px}
+.secondary{width:100%;background:var(--asph3);color:var(--txt);font-weight:700;font-size:16px;padding:14px;border-radius:15px}
+.compass{width:190px;height:190px;margin:6px auto 12px;display:block}
+.c-txt{text-align:center;font-size:15px;line-height:1.45}
+.c-txt b{font-family:var(--din);font-size:26px;font-weight:400;display:block}
+
+.drive{position:fixed;inset:0;z-index:30;background:#0d0f11;display:flex;flex-direction:column;animation:fade .2s}
+.drive svg.road{flex:1;width:100%}
+.drive-top{position:absolute;top:calc(var(--st) + 24px);left:0;right:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px}
+.drive-top .to{font-family:var(--din);font-size:28px;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.5)}
+.drive-bot{position:absolute;bottom:calc(var(--sb) + 34px);left:0;right:0;text-align:center}
+.odo{display:inline-block;background:#000;color:#ffd24d;font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:30px;padding:8px 16px;border-radius:10px;letter-spacing:2px;box-shadow:inset 0 0 0 2px #333;font-variant-numeric:tabular-nums}
+.skip{display:block;margin-top:12px;font-size:12px;color:#777}
+.lane{animation:lane .3s linear infinite}
+.drive.slow .lane{animation-duration:1.2s}
+.empty{font-family:var(--din);font-size:30px;color:var(--red);margin-bottom:12px}
+
+.toast{position:fixed;left:50%;top:calc(var(--st) + 120px);transform:translateX(-50%);background:var(--brown);color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;font-weight:600;z-index:40;box-shadow:0 10px 30px rgba(0,0,0,.4),inset 0 0 0 2px rgba(255,255,255,.8);animation:pop .3s ease;max-width:88vw;text-align:center}
+.toast.dark{background:var(--asph3);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+
+/* ---------- Result ---------- */
+.res{min-height:100dvh;padding:calc(var(--st) + 18px) 16px calc(var(--sb) + 26px)}
+.res-head{text-align:center;animation:pop .4s ease}
+.res-head h1{font-family:var(--din);font-size:36px;font-weight:400;margin-top:12px}
+.res-head p{color:var(--mut);font-size:14px;margin-top:4px}
+.stars{font-size:38px;letter-spacing:6px;margin-top:6px;color:var(--y)}
+.stars i{font-style:normal;color:#3a3f45}
+.failsign{display:inline-block;background:var(--red);color:#fff;border-radius:10px;padding:5px}
+.failsign span{display:block;border:3px solid #fff;border-radius:7px;padding:8px 18px 6px;font-family:var(--din);font-size:24px}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.stats div{background:var(--asph2);border:1px solid var(--line);border-radius:14px;padding:12px}
+.stats b{display:block;font-family:var(--din);font-size:24px;font-weight:400}
+.stats span{font-size:12px;color:var(--mut)}
+.mapbox{margin-top:16px;background:#101215;border:1px solid var(--line);border-radius:18px;padding:8px;overflow:hidden}
+.mapbox svg{width:100%;height:auto;display:block}
+.legend{display:flex;gap:14px;justify-content:center;font-size:12px;color:var(--mut);padding:8px 0 4px;flex-wrap:wrap}
+.legend i{display:inline-block;width:18px;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.trail{display:flex;flex-wrap:wrap;gap:5px;margin-top:14px;font-size:13px;align-items:center}
+.trail span{background:var(--asph3);padding:4px 8px;border-radius:7px}
+.trail span.t{background:var(--y);color:var(--ink);font-weight:700}
+.trail em{font-style:normal;color:var(--mut)}
+.btns{display:grid;gap:10px;margin-top:22px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+'use strict';
+/* =========================================================
+   DATEN: Orte (Name|Breite|Länge|Stufe|Sehenswürdigkeit)
+   Stufe 1 = Fernziel-Metropole, 2 = Großstadt, 3 = Stadt
+   ========================================================= */
+const NODE_DATA = `Hamburg|53.55|10.00|1|Elbphilharmonie
+Berlin|52.52|13.40|1|Brandenburger Tor
+München|48.14|11.58|1|Olympiapark
+Köln|50.94|6.96|1|Kölner Dom
+Frankfurt|50.11|8.68|1|Römerberg
+Stuttgart|48.78|9.18|1|Wilhelma
+Düsseldorf|51.23|6.78|1|Rheinturm
+Dortmund|51.51|7.47|1|Deutsches Fußballmuseum
+Essen|51.46|7.01|1|Zeche Zollverein
+Leipzig|51.34|12.37|1|Völkerschlachtdenkmal
+Bremen|53.08|8.80|1|Bremer Stadtmusikanten
+Dresden|51.05|13.74|1|Frauenkirche
+Hannover|52.37|9.73|1|Herrenhäuser Gärten
+Nürnberg|49.45|11.08|1|Kaiserburg
+Duisburg|51.43|6.76|2|Landschaftspark Nord
+Bochum|51.48|7.22|2|Bergbau-Museum
+Wuppertal|51.26|7.15|2|Schwebebahn
+Bielefeld|52.02|8.53|2|Sparrenburg
+Bonn|50.73|7.10|2|Haus der Geschichte
+Münster|51.96|7.63|2|Prinzipalmarkt
+Mannheim|49.49|8.47|2|Wasserturm
+Karlsruhe|49.01|8.40|2|Schloss Karlsruhe
+Augsburg|48.37|10.90|2|Fuggerei
+Wiesbaden|50.08|8.24|2|Kurhaus
+Mainz|50.00|8.27|2|Mainzer Dom
+Kiel|54.32|10.13|2|Kieler Förde
+Lübeck|53.87|10.69|2|Holstentor
+Rostock|54.09|12.10|2|Warnemünde
+Magdeburg|52.13|11.63|2|Grüne Zitadelle
+Erfurt|50.98|11.03|2|Krämerbrücke
+Kassel|51.31|9.48|2|Bergpark Wilhelmshöhe
+Braunschweig|52.27|10.52|2|
+Chemnitz|50.83|12.92|2|
+Halle|51.48|11.97|2|Händelhaus
+Freiburg|47.99|7.84|2|Freiburger Münster
+Osnabrück|52.28|8.05|2|
+Oldenburg|53.14|8.21|2|
+Würzburg|49.79|9.95|2|Residenz Würzburg
+Regensburg|49.01|12.10|2|Steinerne Brücke
+Ulm|48.40|9.99|2|Ulmer Münster
+Saarbrücken|49.23|7.00|2|
+Aachen|50.78|6.08|2|Aachener Dom
+Koblenz|50.36|7.59|2|Deutsches Eck
+Göttingen|51.54|9.93|2|
+Heilbronn|49.14|9.22|2|
+Hagen|51.36|7.47|2|Freilichtmuseum
+Paderborn|51.72|8.75|2|
+Potsdam|52.39|13.06|2|Schloss Sanssouci
+Gelsenkirchen|51.51|7.10|2|
+Oberhausen|51.47|6.85|2|Gasometer
+Darmstadt|49.87|8.65|2|Mathildenhöhe
+Heidelberg|49.40|8.67|2|Heidelberger Schloss
+Lünen|51.62|7.53|3|Seepark Lünen
+Hamm|51.68|7.82|3|Maximilianpark
+Unna|51.54|7.69|3|
+Recklinghausen|51.61|7.20|3|
+Rhede|51.84|6.70|3|Pröbstingsee
+Bocholt|51.84|6.62|3|
+Borken|51.84|6.86|3|
+Wesel|51.66|6.62|3|
+Soest|51.57|8.11|3|
+Siegen|50.87|8.02|3|
+Gießen|50.58|8.68|3|
+Fulda|50.55|9.68|3|Fuldaer Dom
+Limburg|50.39|8.06|3|Limburger Dom
+Kaiserslautern|49.44|7.77|3|
+Trier|49.75|6.64|3|Porta Nigra
+Flensburg|54.79|9.44|3|
+Neumünster|54.07|9.98|3|
+Bremerhaven|53.55|8.58|3|Klimahaus
+Cuxhaven|53.87|8.70|3|Wattenmeer
+Wilhelmshaven|53.53|8.11|3|
+Emden|53.37|7.21|3|
+Lingen|52.52|7.32|3|
+Rheine|52.28|7.44|3|
+Wolfsburg|52.42|10.79|3|Autostadt
+Celle|52.62|10.08|3|Schloss Celle
+Lüneburg|53.25|10.41|3|
+Schwerin|53.63|11.41|3|Schweriner Schloss
+Stralsund|54.31|13.09|3|Ozeaneum
+Frankfurt (Oder)|52.35|14.55|3|
+Cottbus|51.76|14.33|3|
+Görlitz|51.15|14.99|3|Altstadt Görlitz
+Dessau|51.83|12.24|3|Bauhaus
+Weimar|50.98|11.33|3|Goethehaus
+Eisenach|50.98|10.32|3|Wartburg
+Jena|50.93|11.59|3|
+Gera|50.88|12.08|3|
+Zwickau|50.72|12.49|3|
+Suhl|50.61|10.69|3|
+Hof|50.31|11.92|3|
+Bayreuth|49.95|11.58|3|Festspielhaus
+Bamberg|49.89|10.89|3|Altstadt Bamberg
+Schweinfurt|50.05|10.23|3|
+Ingolstadt|48.77|11.43|3|
+Landshut|48.54|12.15|3|Burg Trausnitz
+Deggendorf|48.84|12.96|3|
+Passau|48.57|13.43|3|Dreiflüssestadt
+Rosenheim|47.86|12.12|3|
+Garmisch-Partenkirchen|47.49|11.10|3|Zugspitze
+Füssen|47.57|10.70|3|Schloss Neuschwanstein
+Kempten|47.73|10.31|3|
+Memmingen|47.99|10.18|3|
+Lindau|47.55|9.68|3|Lindauer Hafen
+Konstanz|47.66|9.17|3|Insel Mainau
+Singen|47.76|8.84|3|Hohentwiel
+Offenburg|48.47|7.94|3|
+Pforzheim|48.89|8.70|3|`;
+
+/* Straßen als Ketten: Straße|Ort,Ort,Ort  (L = Landstraße ohne Nummer) */
+const ROAD_DATA = `A 1|Lübeck,Hamburg,Bremen,Osnabrück,Münster,Unna,Hagen,Wuppertal,Köln,Trier,Saarbrücken
+A 2|Oberhausen,Recklinghausen,Dortmund,Hamm,Bielefeld,Hannover,Braunschweig,Magdeburg,Potsdam
+A 3|Wesel,Oberhausen,Duisburg,Düsseldorf,Köln,Limburg,Frankfurt,Würzburg,Nürnberg,Regensburg,Deggendorf,Passau
+A 4|Aachen,Köln,Siegen
+A 4|Fulda,Eisenach,Erfurt,Weimar,Jena,Gera,Chemnitz,Dresden,Görlitz
+A 5|Gießen,Frankfurt,Darmstadt,Heidelberg,Karlsruhe,Offenburg,Freiburg
+A 6|Saarbrücken,Kaiserslautern,Mannheim,Heilbronn,Nürnberg
+A 7|Flensburg,Neumünster,Hamburg,Hannover,Göttingen,Kassel,Fulda,Würzburg,Ulm,Memmingen,Kempten,Füssen
+A 8|Karlsruhe,Pforzheim,Stuttgart,Ulm,Augsburg,München,Rosenheim
+A 9|Potsdam,Dessau,Leipzig,Gera,Hof,Bayreuth,Nürnberg,Ingolstadt,München
+A 115|Potsdam,Berlin
+A 12|Berlin,Frankfurt (Oder)
+A 13|Berlin,Cottbus
+A 13|Berlin,Dresden
+A 14|Magdeburg,Halle,Leipzig,Dresden
+A 14|Schwerin,Rostock
+A 24|Hamburg,Schwerin,Berlin
+A 20|Lübeck,Rostock,Stralsund
+A 19|Rostock,Berlin
+A 27|Bremen,Bremerhaven,Cuxhaven
+A 28|Bremen,Oldenburg,Emden
+A 29|Wilhelmshaven,Oldenburg,Osnabrück
+A 31|Emden,Lingen,Borken,Gelsenkirchen
+A 30|Osnabrück,Rheine
+A 33|Osnabrück,Bielefeld,Paderborn
+A 44|Aachen,Düsseldorf
+A 44|Dortmund,Unna,Soest,Paderborn,Kassel
+A 45|Dortmund,Hagen,Siegen,Gießen
+A 40|Duisburg,Essen,Bochum,Dortmund
+A 42|Oberhausen,Gelsenkirchen
+A 43|Münster,Recklinghausen,Bochum,Wuppertal
+A 52|Düsseldorf,Essen,Gelsenkirchen
+A 46|Düsseldorf,Wuppertal
+A 555|Köln,Bonn
+A 61|Bonn,Koblenz,Mainz,Mannheim
+A 48|Trier,Koblenz,Limburg
+A 62|Trier,Kaiserslautern
+A 63|Mainz,Kaiserslautern
+A 643|Mainz,Wiesbaden
+A 66|Wiesbaden,Frankfurt,Fulda
+A 60|Mainz,Darmstadt
+A 67|Darmstadt,Mannheim
+A 656|Mannheim,Heidelberg
+A 71|Erfurt,Suhl,Schweinfurt
+A 73|Suhl,Bamberg,Nürnberg
+A 70|Schweinfurt,Bamberg,Bayreuth
+A 72|Hof,Zwickau,Chemnitz,Leipzig
+A 38|Göttingen,Halle
+A 93|Regensburg,Hof
+A 92|München,Landshut,Deggendorf
+A 96|München,Memmingen,Lindau
+A 81|Würzburg,Heilbronn,Stuttgart,Singen
+A 95|München,Garmisch-Partenkirchen
+A 39|Hamburg,Lüneburg
+A 39|Braunschweig,Wolfsburg
+A 215|Kiel,Neumünster
+A 49|Kassel,Gießen
+B 54|Münster,Lünen,Dortmund
+B 54|Hagen,Siegen,Limburg,Wiesbaden
+B 1|Dortmund,Unna,Soest,Paderborn
+B 1|Magdeburg,Berlin
+B 67|Bocholt,Rhede,Borken,Münster
+L|Lünen,Hamm
+L|Wesel,Bocholt
+L|Hamm,Soest
+B 8|Duisburg,Wesel
+B 8|Regensburg,Passau
+B 51|Münster,Osnabrück
+B 51|Trier,Saarbrücken
+B 64|Münster,Paderborn
+B 481|Münster,Rheine
+B 70|Rheine,Lingen
+B 7|Hagen,Kassel
+B 9|Bonn,Koblenz,Mainz,Mannheim
+B 42|Koblenz,Wiesbaden
+B 3|Celle,Hannover
+B 3|Kassel,Gießen,Frankfurt,Darmstadt,Heidelberg
+B 3|Karlsruhe,Offenburg,Freiburg
+B 27|Fulda,Göttingen
+B 19|Würzburg,Schweinfurt,Eisenach
+B 2|Augsburg,Nürnberg
+B 2|Berlin,Leipzig
+B 10|Stuttgart,Ulm
+B 14|Stuttgart,Nürnberg
+B 31|Freiburg,Singen
+B 33|Singen,Konstanz
+B 31|Konstanz,Lindau
+B 30|Ulm,Lindau
+B 12|Kempten,Lindau
+B 17|Augsburg,Füssen
+B 15|Regensburg,Landshut,Rosenheim
+B 12|München,Passau
+B 16|Ingolstadt,Regensburg
+B 97|Dresden,Cottbus
+B 115|Görlitz,Cottbus
+B 112|Frankfurt (Oder),Cottbus
+B 96|Berlin,Stralsund
+B 104|Lübeck,Schwerin
+B 6|Bremen,Hannover
+B 4|Lüneburg,Braunschweig
+B 214|Celle,Braunschweig
+B 188|Celle,Wolfsburg
+B 184|Magdeburg,Dessau
+B 87|Leipzig,Weimar
+B 93|Leipzig,Zwickau
+B 173|Dresden,Chemnitz
+B 173|Bamberg,Hof
+B 49|Limburg,Gießen
+B 73|Hamburg,Cuxhaven
+B 76|Flensburg,Kiel,Lübeck
+B 210|Wilhelmshaven,Emden
+B 37|Heidelberg,Heilbronn`;
+
+const LEVELS = [
+  {s:'Lünen',t:'Münster',f:1.9,j:3,tip:'Wegweiser zeigen das nächste Ziel und große Städte weiter weg. Die Zahl daneben sind die Kilometer über diese Straße.'},
+  {s:'Rhede',t:'Dortmund',f:1.7,j:3,tip:'Kleine Orte stehen oft erst kurz vorher auf den Schildern. Orientiere dich an großen Städten in Richtung deines Ziels.'},
+  {s:'Köln',t:'Frankfurt',f:1.6,j:3,tip:'Blaue Felder führen auf die Autobahn – meist schnell und direkt, aber nicht immer der kürzeste Weg.'},
+  {s:'Dortmund',t:'Hamburg',f:1.5,j:2,tip:'Ab jetzt wird der Tank knapper. Jeder Umweg zählt.'},
+  {s:'Bremen',t:'Kassel',f:1.5,j:2,tip:'Kassel steht nicht von Anfang an auf den Schildern. Welche Großstadt liegt auf dem Weg?'},
+  {s:'Düsseldorf',t:'Erfurt',f:1.45,j:2,tip:'Quer durch die Mitte Deutschlands. Ein Navi-Blick zeigt dir die Luftlinie.'},
+  {s:'Hannover',t:'Nürnberg',f:1.4,j:2,tip:'Lange Strecke nach Süden – mehrere Wege führen nach Franken.'},
+  {s:'Aachen',t:'Dresden',f:1.35,j:2,tip:'Einmal von ganz West nach ganz Ost.'},
+  {s:'Kiel',t:'Würzburg',f:1.35,j:2,tip:'Vom Norden bis nach Mainfranken – der Tank ist knapp bemessen.'},
+  {s:'Freiburg',t:'Leipzig',f:1.3,j:2,tip:'Aus dem Breisgau nach Sachsen. Plane früh.'},
+  {s:'Emden',t:'Passau',f:1.3,j:1,tip:'Passau steht erst ganz zum Schluss auf den Schildern. Nur ein Navi-Blick.'},
+  {s:'Flensburg',t:'Füssen',f:1.25,j:1,tip:'Die Königsetappe: einmal komplett durch Deutschland bis vor die Alpen.'}
+];
+
+/* Grobe Umrisslinie Deutschlands (Länge, Breite) */
+const OUTLINE = [[8.6,54.9],[9.4,54.83],[9.95,54.78],[10.1,54.48],[10.9,54.38],[11.1,54.48],[10.85,53.98],[11.45,54.02],[12.1,54.18],[12.9,54.44],[13.4,54.68],[13.75,54.52],[14.22,53.95],[14.42,53.3],[14.15,52.85],[14.6,52.6],[14.75,52.08],[14.6,51.62],[15.03,51.25],[14.85,50.87],[14.4,50.92],[13.5,50.65],[12.9,50.43],[12.25,50.27],[12.12,50.32],[12.5,49.95],[12.45,49.7],[12.9,49.35],[13.5,48.95],[13.83,48.75],[13.45,48.55],[13.0,48.27],[12.75,48.12],[13.0,47.85],[12.9,47.68],[12.2,47.6],[11.6,47.58],[11.1,47.4],[10.45,47.55],[10.2,47.38],[9.75,47.55],[9.2,47.66],[8.6,47.65],[8.4,47.6],[7.6,47.58],[7.55,47.95],[7.75,48.5],[8.2,48.97],[7.6,49.05],[7.0,49.12],[6.75,49.15],[6.35,49.46],[6.5,49.72],[6.13,50.13],[6.4,50.32],[6.05,50.65],[5.95,50.98],[6.1,51.15],[6.2,51.52],[5.95,51.83],[6.7,51.9],[6.85,52.12],[7.05,52.25],[6.7,52.48],[7.05,52.65],[7.2,53.25],[7.0,53.35],[7.3,53.7],[8.0,53.72],[8.5,53.55],[8.6,53.88],[9.0,53.88],[8.85,54.05],[8.6,54.3],[8.9,54.5],[8.6,54.9]];
+
+/* =========================================================
+   GRAPH
+   ========================================================= */
+const N = {}; const ADJ = {}; const EDGES = [];
+NODE_DATA.split('\n').forEach(l => {
+  const [name, lat, lon, tier, sight] = l.split('|');
+  N[name] = {name, lat:+lat, lon:+lon, tier:+tier, sight:(sight||'').trim()};
+  ADJ[name] = [];
+});
+const rad = d => d*Math.PI/180;
+function hav(a,b){const R=6371,dLa=rad(b.lat-a.lat),dLo=rad(b.lon-a.lon);const x=Math.sin(dLa/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function bearing(a,b){const p1=rad(a.lat),p2=rad(b.lat),dl=rad(b.lon-a.lon);const y=Math.sin(dl)*Math.cos(p2);const x=Math.cos(p1)*Math.sin(p2)-Math.sin(p1)*Math.cos(p2)*Math.cos(dl);return (Math.atan2(y,x)*180/Math.PI+360)%360;}
+ROAD_DATA.split('\n').forEach(l => {
+  const [road, chain] = l.split('|');
+  const names = chain.split(',');
+  for (let i=0;i<names.length-1;i++){
+    const a=names[i].trim(), b=names[i+1].trim();
+    if(!N[a]||!N[b]) throw new Error('Ort fehlt: '+a+' / '+b);
+    const type = road[0];
+    const km = Math.max(5, Math.round(hav(N[a],N[b]) * (type==='A'?1.17:1.27)));
+    const e = {id:EDGES.length, road:road.trim(), type, a, b, km};
+    EDGES.push(e); ADJ[a].push({e,to:b}); ADJ[b].push({e,to:a});
+  }
+});
+const KEYS = Object.keys(N);
+const DC = {};
+function dj(src, ban){
+  const key = src+'|'+(ban||''); if (DC[key]) return DC[key];
+  const dist={},prev={},done={};
+  for(const k of KEYS) dist[k]=Infinity; dist[src]=0;
+  for(;;){
+    let u=null,b=Infinity;
+    for(const k of KEYS){ if(!done[k]&&dist[k]<b){b=dist[k];u=k;} }
+    if(u===null) break; done[u]=1;
+    for(const {e,to} of ADJ[u]){
+      if(to===ban) continue;
+      const nd=dist[u]+e.km;
+      if(nd<dist[to]){dist[to]=nd;prev[to]={u,e};}
+    }
+  }
+  return DC[key]={dist,prev};
+}
+function pathTo(D,t){const p=[t];let c=t;while(D.prev[c]){c=D.prev[c].u;p.unshift(c);}return p;}
+
+/* =========================================================
+   SPEICHER
+   ========================================================= */
+const KEY='abzweig.v1';
+let save={unlocked:1,stars:{},best:0,streak:0,sights:[]};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s)save=Object.assign(save,s);}catch(e){}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(save));}catch(e){}}
+
+/* =========================================================
+   HILFEN / ICONS
+   ========================================================= */
+const app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const SIGHTS = KEYS.filter(k=>N[k].sight);
+function arrowSVG(deg){
+  if(deg==='u') return `<svg class="arr" viewBox="0 0 40 40"><path d="M27 37V15a8 8 0 0 0-16 0v8" fill="none" stroke="currentColor" stroke-width="5.5" stroke-linecap="butt"/><path d="M3 21h16l-8 12z" fill="currentColor"/></svg>`;
+  return `<svg class="arr" viewBox="0 0 40 40"><g transform="rotate(${deg} 20 20)"><path d="M20 2 L33 17 L23.2 17 L23.2 38 L16.8 38 L16.8 17 L7 17 Z" fill="currentColor"/></g></svg>`;
+}
+const IC = {
+  home:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>`,
+  compass:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="9.5"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor" stroke-linejoin="round"/></svg>`,
+  fuel:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><path d="M4 21V5a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v16M3 21h13M4 10h11"/><path d="M15 8h2a2 2 0 0 1 2 2v7a1.5 1.5 0 0 0 3 0V9l-3-3"/></svg>`,
+  go:`<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l13 8-13 8z"/></svg>`,
+  down:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 4v16M6 14l6 6 6-6"/></svg>`,
+  sight:`<svg viewBox="0 0 40 40" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round"><path d="M6 34h28M9 34V18l5-5 5 5v16M21 34V12l5-6 5 6v22M12 23h4M24 18h4M24 25h4"/></svg>`,
+  logo:`<svg viewBox="0 0 54 54"><rect x="20" y="16" width="8" height="34" fill="#101010"/><path d="M24 2l14 16H10z" fill="#101010"/><rect x="24" y="33" width="18" height="8" fill="#101010"/><path d="M53 37L40 26v22z" fill="#101010"/></svg>`
+};
+function toast(msg,dark){
+  const t=document.createElement('div');t.className='toast'+(dark?' dark':'');t.textContent=msg;document.body.appendChild(t);
+  setTimeout(()=>{t.style.transition='opacity .4s';t.style.opacity='0';},2100);setTimeout(()=>t.remove(),2600);
+}
+function starsFor(ratio){return ratio<=1.05?3:ratio<=1.2?2:1;}
+function starStr(n){let s='';for(let i=0;i<3;i++)s+=i<n?'★':'<i>★</i>';return s;}
+
+/* =========================================================
+   STARTSEITE
+   ========================================================= */
+let resetArm=false;
+function renderHome(){
+  G=null;
+  const lv = LEVELS.map((L,i)=>{
+    const locked = i>=save.unlocked, st=save.stars[i]||0;
+    const next = !locked && !st;
+    return `<button class="lv ${locked?'locked':''} ${next?'next':''}" data-lvl="${i}" ${locked?'disabled':''}>
+      <div class="lv-in"><div class="no">LEVEL ${i+1}</div>
+      ${locked?`<div class="a">🔒</div>`:`<div class="a">${esc(L.s)}</div><div class="via">↓</div><div class="b">${esc(L.t)}</div>`}
+      <div class="st">${locked?'':starStr(st).replace(/<i>/g,'<i style="font-style:normal;opacity:.25">')}</div></div></button>`;
+  }).join('');
+  const endUnlocked = save.unlocked>3;
+  const totalStars = Object.values(save.stars).reduce((a,b)=>a+b,0);
+  const album = SIGHTS.map(k=>save.sights.includes(N[k].sight)?`<span class="chip">${esc(N[k].sight)}</span>`:`<span class="chip no">? ? ?</span>`).join('');
+  app.innerHTML = `<div class="home">
+    <div class="logo"><div class="logo-in">${IC.logo}<div><h1>ABZWEIG</h1><p>Ans Ziel – nur mit Wegweisern.</p></div></div></div>
+    <div class="sec"><h2>Level <span>${totalStars} / ${LEVELS.length*3} ★</span></h2><div class="grid">${lv}</div></div>
+    <div class="sec"><h2>Endlos</h2>
+      <button class="endless ${endUnlocked?'':'locked'}" data-act="endless" ${endUnlocked?'':'disabled'}><div class="endless-in"><span class="shield">∞</span>
+      <div><b>Zufallsroute</b><small>${endUnlocked?`Beste Serie: ${save.best} · Aktuell: ${save.streak}`:'Wird nach Level 3 freigeschaltet'}</small></div></div></button></div>
+    <div class="sec"><h2>Sammelalbum <span>${save.sights.length} / ${SIGHTS.length}</span></h2><div class="album">${album}</div></div>
+    <button class="reset ${resetArm?'arm':''}" data-act="reset">${resetArm?'Wirklich alles zurücksetzen? Nochmal tippen':'Fortschritt zurücksetzen'}</button>
+  </div>`;
+}
+
+/* =========================================================
+   SPIEL
+   ========================================================= */
+let G=null;
+function randomPair(){
+  for(let i=0;i<800;i++){
+    const s=KEYS[Math.random()*KEYS.length|0], t=KEYS[Math.random()*KEYS.length|0];
+    if(s===t) continue; const d=dj(s).dist[t];
+    if(d>=180&&d<=560) return [s,t];
+  }
+  return ['Köln','Frankfurt'];
+}
+function startGame(mode,idx){
+  let s,t,f,j,tip;
+  if(mode==='level'){({s,t,f,j,tip}=LEVELS[idx]);}
+  else{[s,t]=randomPair();f=1.4;j=2;tip='Zufällige Route. Jede Ankunft verlängert deine Serie – liegenbleiben setzt sie zurück.';}
+  const D=dj(s), opt=D.dist[t], fuel=Math.ceil(opt*f);
+  G={mode,idx,start:s,target:t,cur:s,heading:null,arrType:null,fuelMax:fuel,fuel,driven:0,opt,optPath:pathTo(D,t),
+     path:[s],turns:0,jokers:j,sel:null,opts:[],newSights:[],stranded:null,tip,quitArm:false};
+  computeOptions(); renderGame(); noteSight(); showBriefing();
+}
+function noteSight(){
+  const sg=N[G.cur].sight;
+  if(sg && !save.sights.includes(sg)){save.sights.push(sg);G.newSights.push(sg);persist();setTimeout(()=>toast('Neu im Sammelalbum: '+sg),500);}
+}
+function computeOptions(){
+  const cur=G.cur, Dc=dj(cur), T=G.target;
+  G.opts = ADJ[cur].map(({e,to})=>{
+    const Dt=dj(to,cur), via=k=>e.km+Dt.dist[k];
+    const cand=KEYS.filter(k=>k!==cur&&k!==to&&isFinite(Dt.dist[k])&&via(k)<=Dc.dist[k]*1.03+2);
+    const names=[{n:to,km:e.km}];
+    if(T!==to && cand.includes(T)){const v=via(T),tt=N[T].tier;if(v<=(tt===1?150:tt===2?100:60))names.push({n:T,km:v});}
+    const pick=f=>{let best=null;for(const k of cand){if(k===T||names.some(x=>x.n===k)||!f(k))continue;const v=via(k);if(!best||v<best.km)best={n:k,km:v};}if(best)names.push(best);};
+    if(names.length<3) pick(k=>N[k].tier===1&&via(k)<=520);
+    if(names.length<3) pick(k=>N[k].tier<=2&&via(k)<=150);
+    names.sort((a,b)=>a.km-b.km);
+    const br=bearing(N[cur],N[to]);
+    const rel=((br-(G.heading??0)+540)%360)-180;
+    const back=G.heading!==null&&Math.abs(rel)>145;
+    let q=Math.round(rel/45)*45; if(G.heading!==null) q=Math.max(-135,Math.min(135,q)); if(q===-180)q=180;
+    return {e,to,names,rel,q,back};
+  });
+  const key=o=>o.back?9:o.q===0?0:o.q<0?1-o.q/1000:3+o.q/1000;
+  G.opts.forEach((o,i)=>o.i=i);
+  G.order = G.opts.slice().sort((a,b)=>key(a)-key(b)||a.e.km-b.e.km);
+}
+function rowHTML(o,base){
+  const inset = base!=='blue' && o.e.type==='A';
+  const right = !o.back && o.q>0 && o.q<180;
+  const names = o.names.map(n=>`<div class="nm"><span>${esc(n.n)}</span><em>${Math.round(n.km)}</em></div>`).join('');
+  const badge = o.e.type==='A'?`<span class="bd bd-a">${o.e.road}</span>`:o.e.type==='B'?`<span class="bd bd-b">${o.e.road}</span>`:'';
+  return `<button class="row ${inset?'inset':''} ${right?'rt':''} ${G.sel===o.i?'sel':''}" data-opt="${o.i}">${arrowSVG(o.back?'u':o.q)}<div class="names">${names}</div>${badge}</button>`;
+}
+function signHTML(color,head,list,small){
+  if(!list.length) return '';
+  return `<div class="sign s-${color} ${small?'s-small':''}"><div class="sign-in">${head?`<div class="sign-h">${head}</div>`:''}${list.map(o=>rowHTML(o,color)).join('')}</div></div>`;
+}
+const TREES = `<svg viewBox="0 0 400 260" preserveAspectRatio="xMidYMax slice"><g stroke="#5b5048" stroke-linecap="round" fill="none">
+<path d="M40 260V120M40 170l-28-40M40 150l26-46M40 130l-14-34M40 200l20-24" stroke-width="5"/>
+<path d="M110 260V150M110 190l-20-30M110 175l22-32M110 160l-8-26" stroke-width="4"/>
+<path d="M300 260V100M300 160l-34-44M300 140l30-50M300 120l-12-40M300 190l26-28M300 210l-24-22" stroke-width="6"/>
+<path d="M368 260V140M368 180l-22-32M368 165l20-36" stroke-width="4"/>
+<path d="M200 260V185M200 210l-14-20M200 200l14-22" stroke-width="3"/></g></svg>`;
+function sceneHTML(){
+  const front=G.order.filter(o=>!o.back), back=G.order.filter(o=>o.back);
+  let h=`<div class="here"><small>Du bist in</small><div class="ortstafel"><span>${esc(G.cur)}</span></div></div>`;
+  if(G.heading===null) h+=`<div class="note">Start: Norden ist oben. Danach zeigen die Pfeile in Fahrtrichtung.</div>`;
+  if(N[G.cur].sight) h+=`<div class="sign s-brown s-small"><div class="sign-in"><div class="brown-in">${IC.sight}<b>${esc(N[G.cur].sight)}</b></div></div></div>`;
+  if(G.arrType==='A'){
+    h+=signHTML('blue','',front.filter(o=>o.e.type==='A'));
+    h+=signHTML('blue','Ausfahrt',front.filter(o=>o.e.type!=='A'));
+  } else {
+    h+=signHTML(N[G.cur].tier<=2?'white':'yellow','',front);
+  }
+  h+=signHTML('white','Wenden',back,true);
+  return `<div class="trees">${TREES}</div><div class="ground"></div><div class="posts"><i></i><i></i></div>${h}`;
+}
+function hudHTML(){
+  const p=Math.max(0,G.fuel/G.fuelMax), col=p>.5?'var(--grn)':p>.25?'var(--y)':'var(--red)';
+  return `<div class="hud-top">
+      <button class="ib ${G.quitArm?'arm':''}" data-act="quit" aria-label="Beenden">${IC.home}</button>
+      <div class="ziel"><small>Ziel</small><div class="ort"><span>${esc(G.target)}</span></div></div>
+      <button class="navi" data-act="navi" ${G.jokers>0?'':'disabled'}>${IC.compass}${G.jokers}</button></div>
+    <div class="tank">${IC.fuel}<div class="bar"><i style="width:${(p*100).toFixed(1)}%;background:${col}"></i></div><b>${Math.max(0,Math.round(G.fuel))} km</b></div>
+    <div class="meta"><span>${G.mode==='level'?'Level '+(G.idx+1):'Endlos · Serie '+save.streak}</span><span>Gefahren ${Math.round(G.driven)} km · ${G.turns} Abzweigungen</span></div>`;
+}
+function dockHTML(){
+  if(G.sel===null) return `<div class="info hint">Tippe auf eine Richtung am Schild.</div><button class="go" disabled>Fahren ${IC.go}</button>`;
+  const o=G.opts[G.sel], warn=o.e.km>G.fuel;
+  const road=o.e.type==='L'?'Landstraße':o.e.road;
+  return `<div class="info"><b>${esc(road)}</b> nach <b>${esc(o.to)}</b> · ${o.e.km} km${warn?'<span class="warn">Der Tank reicht dafür nicht!</span>':''}</div><button class="go" data-act="drive">Fahren ${IC.go}</button>`;
+}
+function skyVars(){
+  const p=G.fuel/G.fuelMax;
+  if(p>.5) return '--sky1:#4f8fcc;--sky2:#cfe3f3';
+  if(p>.25) return '--sky1:#6b86b8;--sky2:#f1d6a8';
+  return '--sky1:#3c3f6e;--sky2:#ef9a6a';
+}
+function renderGame(){
+  app.innerHTML = `<div class="game"><div class="hud">${hudHTML()}</div>
+    <div class="scene" style="${skyVars()}"><div class="scene-in">${sceneHTML()}</div></div>
+    <div class="dock">${dockHTML()}</div></div>`;
+}
+function refreshSelection(){
+  document.querySelectorAll('.row').forEach(r=>r.classList.toggle('sel',+r.dataset.opt===G.sel));
+  document.querySelector('.dock').innerHTML=dockHTML();
+}
+function refreshHud(){const h=document.querySelector('.hud');if(h)h.innerHTML=hudHTML();}
+
+function showBriefing(){
+  const ov=document.createElement('div');ov.className='ov';
+  ov.innerHTML=`<div class="card"><div class="lvl">${G.mode==='level'?'Level '+(G.idx+1):'Endlos-Modus'}</div>
+    <div class="route"><div class="ort"><span>${esc(G.start)}</span></div>${IC.down}<div class="ort"><span>${esc(G.target)}</span></div></div>
+    <div class="facts"><div><b>${G.fuelMax} km</b><span>im Tank</span></div><div><b>${G.jokers}</b><span>Navi-Blicke</span></div></div>
+    <p class="tip">${esc(G.tip)}</p><button class="primary" data-act="closeov">Losfahren</button></div>`;
+  document.body.appendChild(ov);
+}
+function closeOverlays(){document.querySelectorAll('.ov').forEach(o=>o.remove());}
+
+function showNavi(){
+  if(!G||G.jokers<=0) return;
+  G.jokers--; refreshHud();
+  const b=bearing(N[G.cur],N[G.target]); const rel=G.heading===null?b:b-G.heading;
+  const air=Math.round(hav(N[G.cur],N[G.target]));
+  const ticks=G.heading===null?`<text x="100" y="30" text-anchor="middle" fill="#979da4" font-size="15" font-weight="700">N</text>`:`<text x="100" y="30" text-anchor="middle" fill="#979da4" font-size="11" font-weight="700">VORAUS</text>`;
+  const ov=document.createElement('div');ov.className='ov';
+  ov.innerHTML=`<div class="card"><div class="lvl">Navi-Blick</div>
+    <svg class="compass" viewBox="0 0 200 200"><circle cx="100" cy="100" r="92" fill="#141619" stroke="#353a40" stroke-width="4"/>
+    ${Array.from({length:12},(_,i)=>`<line x1="100" y1="12" x2="100" y2="${i%3?20:26}" stroke="#4a5057" stroke-width="3" transform="rotate(${i*30} 100 100)"/>`).join('')}
+    ${ticks}<g transform="rotate(${rel.toFixed(1)} 100 100)"><path d="M100 40 L122 108 L104 100 L104 150 L96 150 L96 100 L78 108 Z" fill="#ff6b1a"/></g><circle cx="100" cy="100" r="6" fill="#ebe9e3"/></svg>
+    <div class="c-txt">Luftlinie nach ${esc(G.target)}<b>${air} km</b></div>
+    <p class="tip" style="text-align:center;margin:12px 0 16px">${G.heading===null?'Der Pfeil zeigt die Himmelsrichtung (Norden oben).':'Der Pfeil zeigt relativ zu deiner Fahrtrichtung.'} Noch ${G.jokers} Navi-Blick${G.jokers===1?'':'e'}.</p>
+    <button class="primary" data-act="closeov">Weiterfahren</button></div>`;
+  document.body.appendChild(ov);
+}
+
+function drive(){
+  const o=G.opts[G.sel]; if(!o) return;
+  const strand=o.e.km>G.fuel, km=strand?Math.max(0,G.fuel):o.e.km;
+  const dv=document.createElement('div');dv.className='drive';
+  const badge=o.e.type==='A'?`<span class="bd bd-a" style="font-size:20px">${o.e.road}</span>`:o.e.type==='B'?`<span class="bd bd-b" style="font-size:20px">${o.e.road}</span>`:`<span class="bd" style="background:#2b2f34;color:#ddd;font-size:16px">Landstraße</span>`;
+  const sky=o.e.type==='A'?'#3f78b3':'#5b8fc0';
+  dv.innerHTML=`<svg class="road" viewBox="0 0 400 600" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="sk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sky}"/><stop offset="1" stop-color="#d9e6ef"/></linearGradient></defs>
+    <rect width="400" height="300" fill="url(#sk)"/><rect y="300" width="400" height="300" fill="#4f5a3a"/>
+    <path d="M0 300 Q60 270 120 290 T260 284 T400 292 V300 H0z" fill="#6b7a55" opacity=".7"/>
+    <polygon points="185,300 215,300 400,600 0,600" fill="#2a2d31"/>
+    <polygon points="185,300 188,300 30,600 0,600" fill="#e9e9e9" opacity=".8"/><polygon points="212,300 215,300 400,600 370,600" fill="#e9e9e9" opacity=".8"/>
+    <line class="lane" x1="200" y1="300" x2="200" y2="600" stroke="${o.e.type==='A'?'#fff':'#f0f0f0'}" stroke-width="7" stroke-dasharray="26 38"/></svg>
+    <div class="drive-top">${badge}<div class="to">${strand?'Richtung ':''}${esc(o.to)}</div></div>
+    <div class="drive-bot"><div class="empty" style="display:none">Tank leer!</div><div class="odo">0 km</div><span class="skip">Tippen zum Überspringen</span></div>`;
+  document.body.appendChild(dv);
+  const odo=dv.querySelector('.odo'), dur=Math.min(1900,900+km*4);
+  let t0=null, done=false, raf;
+  const finish=()=>{
+    if(done) return; done=true; cancelAnimationFrame(raf); odo.textContent=Math.round(km)+' km';
+    if(strand){dv.classList.add('slow');dv.querySelector('.empty').style.display='block';setTimeout(()=>{dv.remove();arrive(o,km,true);},1100);}
+    else {dv.remove();arrive(o,km,false);}
+  };
+  const step=ts=>{if(t0===null)t0=ts;const p=Math.min(1,(ts-t0)/dur);const ease=1-Math.pow(1-p,2);odo.textContent=Math.round(km*ease)+' km';if(p<1)raf=requestAnimationFrame(step);else finish();};
+  raf=requestAnimationFrame(step);
+  dv.addEventListener('click',finish);
+}
+function arrive(o,km,strand){
+  G.fuel-=km; G.driven+=km; G.turns++;
+  if(strand){G.stranded={from:G.cur,to:o.to,frac:o.e.km?km/o.e.km:0};return finishGame(false,'stranded');}
+  G.heading=bearing(N[G.cur],N[o.to]); G.arrType=o.e.type; G.cur=o.to; G.path.push(o.to); G.sel=null; G.quitArm=false;
+  noteSight();
+  if(G.cur===G.target) return finishGame(true);
+  computeOptions();
+  if(G.opts.every(x=>x.e.km>G.fuel+0.001) && G.fuel<1) return finishGame(false,'empty');
+  renderGame();
+}
+function finishGame(win,reason){
+  const ratio=G.driven/G.opt, st=win?starsFor(ratio):0;
+  if(G.mode==='level'){
+    if(win){save.stars[G.idx]=Math.max(save.stars[G.idx]||0,st);if(save.unlocked<G.idx+2)save.unlocked=Math.min(LEVELS.length,G.idx+2);}
+  } else {
+    if(win){save.streak++;save.best=Math.max(save.best,save.streak);}else save.streak=0;
+  }
+  persist();
+  G.result={win,reason,st,ratio};
+  renderResult();
+}
+
+/* =========================================================
+   ERGEBNIS + KARTE
+   ========================================================= */
+const P=(lat,lon)=>[((lon-5.7)*63).toFixed(1),((55.15-lat)*100).toFixed(1)];
+const Pn=k=>P(N[k].lat,N[k].lon);
+function mapSVG(){
+  const ol=OUTLINE.map(([lo,la])=>P(la,lo).join(',')).join(' ');
+  const edges=EDGES.map(e=>{const a=Pn(e.a),b=Pn(e.b);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="${e.type==='A'?'#3b5f86':'#5e5434'}" stroke-width="${e.type==='A'?2.2:1.4}"/>`;}).join('');
+  const dots=KEYS.map(k=>{const p=Pn(k);return `<circle cx="${p[0]}" cy="${p[1]}" r="${N[k].tier===1?3.6:2.4}" fill="#6f757c"/>`;}).join('');
+  const lbl=KEYS.filter(k=>N[k].tier===1&&k!==G.start&&k!==G.target).map(k=>{const p=Pn(k);return `<text x="${+p[0]+6}" y="${+p[1]+4}" fill="#6f757c" font-size="13" font-family="-apple-system,sans-serif">${esc(k)}</text>`;}).join('');
+  const optPts=G.optPath.map(k=>Pn(k).join(',')).join(' ');
+  const pts=G.path.map(k=>Pn(k));
+  if(G.stranded){const a=N[G.stranded.from],b=N[G.stranded.to],f=G.stranded.frac;pts.push(P(a.lat+(b.lat-a.lat)*f,a.lon+(b.lon-a.lon)*f));}
+  const myPts=pts.map(p=>p.join(',')).join(' ');
+  const s=Pn(G.start), t=Pn(G.target), end=pts[pts.length-1];
+  const tag=(p,txt,bg,fg)=>{const w=txt.length*9+16;let x=+p[0]-w/2;x=Math.max(4,Math.min(594-w,x));return `<g><rect x="${x}" y="${+p[1]-38}" width="${w}" height="24" rx="5" fill="${bg}" stroke="#101010" stroke-width="2"/><text x="${x+w/2}" y="${+p[1]-20.5}" text-anchor="middle" font-size="15" font-weight="700" fill="${fg}" font-family="-apple-system,sans-serif">${esc(txt)}</text></g>`;};
+  return `<svg viewBox="0 0 600 800"><polygon points="${ol}" fill="#1b1f23" stroke="#3a4047" stroke-width="2.5" stroke-linejoin="round"/>
+    ${edges}${dots}${lbl}
+    <polyline points="${optPts}" fill="none" stroke="#33b073" stroke-width="4" stroke-dasharray="9 7" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="${myPts}" fill="none" stroke="#101010" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+    <polyline points="${myPts}" fill="none" stroke="#f5c400" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${s[0]}" cy="${s[1]}" r="8" fill="#f5c400" stroke="#101010" stroke-width="3"/>
+    <circle cx="${t[0]}" cy="${t[1]}" r="9" fill="#ff6b1a" stroke="#fff" stroke-width="3"/>
+    ${G.result.win?'':`<circle cx="${end[0]}" cy="${end[1]}" r="8" fill="#e5484d" stroke="#fff" stroke-width="3"/>`}
+    ${tag(s,G.start,'#f5c400','#101010')}${tag(t,G.target,'#ff6b1a','#fff')}</svg>`;
+}
+function renderResult(){
+  const R=G.result, detour=Math.round((R.ratio-1)*100);
+  const head = R.win
+    ? `<div class="ortstafel"><span>${esc(G.target)}</span></div><h1>Angekommen!</h1><div class="stars">${starStr(R.st)}</div><p>${R.st===3?'Perfekte Route.':R.st===2?'Guter Weg mit kleinem Umweg.':'Angekommen – aber mit Umwegen.'}</p>`
+    : `<div class="failsign"><span>${R.reason==='stranded'?'Liegengeblieben':'Tank leer'}</span></div><h1>Nicht angekommen</h1><p>${G.mode==='endless'?'Deine Serie ist beendet.':'Versuch eine direktere Route.'}</p>`;
+  const trail=G.path.map((k,i)=>`<span class="${k===G.target?'t':''}">${esc(k)}</span>${i<G.path.length-1?'<em>›</em>':''}`).join('');
+  const hasNext=G.mode==='level'&&R.win&&G.idx<LEVELS.length-1;
+  const btns = G.mode==='level'
+    ? `${hasNext?`<button class="primary" data-act="next">Nächstes Level</button>`:''}<button class="${hasNext?'secondary':'primary'}" data-act="retry">${R.win?'Nochmal fahren':'Nochmal versuchen'}</button><button class="secondary" data-act="home">Übersicht</button>`
+    : `<button class="primary" data-act="endless">Nächste Route</button><button class="secondary" data-act="home">Übersicht</button>`;
+  app.innerHTML=`<div class="res"><div class="res-head">${head}</div>
+    <div class="stats"><div><b>${Math.round(G.driven)} km</b><span>gefahren</span></div><div><b>${Math.round(G.opt)} km</b><span>Ideal-Route</span></div>
+    <div><b>${R.win?(detour<=0?'0 %':'+'+detour+' %'):'–'}</b><span>Umweg</span></div><div><b>${G.mode==='endless'?save.streak+' / '+save.best:G.turns}</b><span>${G.mode==='endless'?'Serie / Beste':'Abzweigungen'}</span></div></div>
+    <div class="mapbox">${mapSVG()}<div class="legend"><span><i style="background:#f5c400"></i>Deine Fahrt</span><span><i style="background:#33b073"></i>Ideal-Route</span><span><i style="background:#3b5f86"></i>Autobahn</span></div></div>
+    <div class="trail">${trail}</div>
+    ${G.newSights.length?`<div class="trail" style="margin-top:10px">${G.newSights.map(s=>`<span class="chip">${esc(s)}</span>`).join('')}</div>`:''}
+    <div class="btns">${btns}</div></div>`;
+  window.scrollTo(0,0);
+}
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+document.addEventListener('click',ev=>{
+  const el=ev.target.closest('[data-act],[data-opt],[data-lvl]'); if(!el||el.disabled) return;
+  if(el.dataset.lvl!==undefined){resetArm=false;return startGame('level',+el.dataset.lvl);}
+  if(el.dataset.opt!==undefined){G.sel=+el.dataset.opt;G.quitArm=false;return refreshSelection();}
+  const a=el.dataset.act;
+  if(a==='closeov') return closeOverlays();
+  if(a==='navi') return showNavi();
+  if(a==='drive') return drive();
+  if(a==='endless'){resetArm=false;window.scrollTo(0,0);return startGame('endless');}
+  if(a==='next') return startGame('level',G.idx+1);
+  if(a==='retry') return startGame('level',G.idx);
+  if(a==='home'){window.scrollTo(0,0);return renderHome();}
+  if(a==='quit'){
+    if(G.quitArm){if(G.mode==='endless'){save.streak=0;persist();}return renderHome();}
+    G.quitArm=true;refreshHud();toast(G.mode==='endless'?'Nochmal tippen zum Beenden (Serie endet)':'Nochmal tippen zum Beenden',true);
+    setTimeout(()=>{if(G&&G.quitArm){G.quitArm=false;refreshHud();}},2600);return;
+  }
+  if(a==='reset'){
+    if(!resetArm){resetArm=true;renderHome();setTimeout(()=>{if(resetArm){resetArm=false;if(!G)renderHome();}},3000);return;}
+    resetArm=false;save={unlocked:1,stars:{},best:0,streak:0,sights:[]};persist();renderHome();toast('Fortschritt zurückgesetzt',true);
+  }
+});
+renderHome();
+</script>
+</body>
+</html>
