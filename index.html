@@ -338,7 +338,7 @@ input[type=checkbox].sw:checked::after{transform:translateX(20px)}
 .ctxt{text-align:center;color:var(--text2);font-size:15px}
 .ctxt b{display:block;font-size:30px;font-weight:800;color:var(--text);margin-top:2px;font-variant-numeric:tabular-nums}
 .diag{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;line-height:1.5;white-space:pre-wrap;word-break:break-word;background:#07090b;border-radius:12px;padding:12px;margin:12px 0;color:#cfd3d7;-webkit-user-select:text;user-select:text}
-.toast{position:fixed;left:50%;top:calc(var(--st) + 128px);transform:translateX(-50%);padding:11px 16px;border-radius:16px;font-size:14px;font-weight:650;z-index:60;animation:rise var(--t2) var(--ease) both;max-width:88vw;text-align:center;pointer-events:none;display:flex;gap:8px;align-items:center;color:#fff}
+.toast{position:fixed;left:50%;top:calc(var(--st) + 128px);transform:translateX(-50%);padding:11px 16px;border-radius:16px;font-size:14px;font-weight:650;z-index:60;animation:toastin var(--t2) var(--ease) both;max-width:88vw;text-align:center;pointer-events:none;display:flex;gap:8px;align-items:center;color:#fff}
 .toast.brown{background:rgba(110,67,37,.94);border:1px solid rgba(255,255,255,.35)}
 .toast.blue{background:rgba(10,90,166,.94);border:1px solid rgba(255,255,255,.3)}
 
@@ -367,6 +367,69 @@ input[type=checkbox].sw:checked::after{transform:translateX(20px)}
 .chip{background:var(--brown);color:#fff;font-family:var(--din);font-size:14px;padding:6px 10px;border-radius:7px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.85)}
 @media (max-width:360px){.lt{font-size:30px}.tiles{grid-template-columns:1fr 1fr}.mini{width:100px;height:100px}.dock{height:128px}:root{--dockH:calc(136px + var(--sb))}}
 
+/* ---------- 4.1: Interaktion ---------- */
+.press{transition:transform 260ms cubic-bezier(.34,1.56,.64,1),opacity var(--t1),background var(--t2),box-shadow var(--t2)}
+.press:active{transform:scale(.94);opacity:.9;transition-duration:90ms}
+.pw:active,.vb:active,.tr:active{filter:brightness(1.08)}
+.vb:active{box-shadow:0 0 0 3px rgba(255,138,42,.6)}
+.tr:active{box-shadow:0 0 0 3px rgba(255,138,42,.6)}
+@keyframes tapspring{0%{transform:scale(1)}28%{transform:scale(.93)}62%{transform:scale(1.045)}100%{transform:scale(1)}}
+@keyframes tapglow{0%{box-shadow:0 0 0 0 rgba(255,138,42,.9)}100%{box-shadow:0 0 0 22px rgba(255,138,42,0)}}
+@keyframes tapglowf{0%{filter:drop-shadow(0 0 0 rgba(255,138,42,1)) drop-shadow(0 0 2px var(--accent))}100%{filter:drop-shadow(0 0 16px rgba(255,138,42,0)) drop-shadow(0 0 2px var(--accent))}}
+.pw.tapped{animation:tapspring 420ms cubic-bezier(.34,1.56,.64,1),tapglowf 600ms ease-out}
+.tr.tapped,.abr.tapped{animation:tapspring 420ms cubic-bezier(.34,1.56,.64,1),tapglow 600ms ease-out}
+.vb.tapped{animation:tapglow 600ms ease-out}
+.vb.S.tapped{animation:tapglow 600ms ease-out}
+.queued-tag{animation:rise .3s var(--ease) both}
+.queued-tag::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--on-accent);animation:twinkle 1s steps(1) infinite}
+
+.ctrl{display:flex;gap:8px;flex-wrap:wrap}
+.dbtn{height:46px;padding:0 15px 0 12px;border-radius:15px;background:rgba(255,255,255,.1);display:flex;align-items:center;gap:7px;font-size:14.5px;font-weight:750;color:var(--text)}
+.dbtn svg{width:19px;height:19px}
+.dbtn.go{background:var(--accent);color:var(--on-accent)}
+.dbtn.fuel{background:var(--info);color:#fff;animation:pulse 1.6s infinite}
+.mini .pull{position:absolute;top:5px;left:50%;transform:translateX(-50%);width:30px;height:4px;border-radius:2px;background:rgba(255,255,255,.35)}
+.mini{touch-action:none}
+
+.mapsheet{position:absolute;left:0;right:0;bottom:0;height:min(66vh,620px);border-radius:30px 30px 0 0;z-index:15;transform:translateY(105%);transition:transform 440ms cubic-bezier(.32,.72,0,1);display:flex;flex-direction:column;overflow:hidden;background:rgba(15,19,24,.94);border-bottom:0}
+.mapsheet.open{transform:translateY(0)}
+.ms-head{padding:8px 14px 8px;touch-action:none;cursor:grab}
+.ms-grab{display:block;width:42px;height:5px;border-radius:3px;background:rgba(255,255,255,.3);margin:0 auto 8px}
+.ms-bar{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700;color:var(--text2)}
+.ms-close{width:40px;height:40px;border-radius:13px;background:rgba(255,255,255,.08);display:grid;place-items:center;color:var(--text)}
+.ms-body{flex:1;position:relative;margin:0 8px calc(var(--sb) + 8px);border-radius:20px;overflow:hidden;background:#0f1418}
+.ms-body canvas{width:100%;height:100%;display:block;touch-action:none}
+.ms-body .fm-btns{position:absolute;right:10px;bottom:10px;display:flex;flex-direction:column;border-radius:16px;overflow:hidden}
+.ms-body .fm-btns button{width:48px;height:48px;display:grid;place-items:center;color:#fff}
+.ms-body .fm-btns button+button{border-top:1px solid var(--stroke)}
+.ms-paused{position:absolute;left:10px;top:10px;font-size:12px;font-weight:800;padding:6px 10px;border-radius:999px;background:rgba(10,14,20,.8);color:var(--warn);letter-spacing:.3px}
+
+
+.coach{position:absolute;inset:0;z-index:12;pointer-events:none;animation:fade .3s}
+.coach.out{opacity:0;transition:opacity .25s}
+@keyframes ring{0%{transform:translate(-50%,-50%) scale(.4);opacity:.9}100%{transform:translate(-50%,-50%) scale(2.2);opacity:0}}
+@keyframes handtap{0%,100%{transform:translate(-20%,0) scale(1)}45%{transform:translate(-20%,-6px) scale(1.05)}60%{transform:translate(-20%,2px) scale(.92)}}
+.coach-ring{position:absolute;width:56px;height:56px;border-radius:50%;border:3px solid var(--accent);animation:ring 1.4s ease-out infinite}
+.coach-hand{position:absolute;color:#fff;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));animation:handtap 1.4s ease-in-out infinite}
+.coach-hand svg{width:46px;height:46px;fill:rgba(20,23,28,.85)}
+.coach-bubble{position:absolute;left:20px;right:20px;border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:3px;font-size:14.5px;color:var(--text2);line-height:1.4;animation:rise .4s var(--ease) both}
+.coach-bubble b{color:var(--text);font-size:16px}
+
+::view-transition-old(root){animation:vtout 200ms ease-in both}
+::view-transition-new(root){animation:vtin 340ms cubic-bezier(.2,.8,.2,1) both}
+@keyframes vtout{to{opacity:0;transform:scale(.985)}}
+@keyframes vtin{from{opacity:0;transform:translateY(14px)}}
+@media (prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root){animation:none}}
+
+@keyframes toastin{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
+.toast svg{width:22px;height:22px;flex:none}
+.ctrl{flex-wrap:nowrap}
+.dbtn{padding:0 12px 0 10px;gap:6px;font-size:14px}
+.game::after{content:"";position:absolute;inset:0;background:rgba(5,8,12,0);pointer-events:none;transition:background .35s;z-index:14}
+.navi-open::after{background:rgba(5,8,12,.5)}
+
+.toast{width:max-content;max-width:88vw}
+
 </style>
 </head>
 <body>
@@ -374,7 +437,7 @@ input[type=checkbox].sw:checked::after{transform:translateX(20px)}
 <label id="hapt" aria-hidden="true" style="position:fixed;left:-300px;top:0;opacity:0;pointer-events:none"><input type="checkbox" switch tabindex="-1"></label>
 <script>
 'use strict';
-const VERSION='4.0', QV='q3';
+const VERSION='4.1', QV='q4';
 /* =========================================================
    LEVEL (echte Orte in NRW)
    ========================================================= */
@@ -438,34 +501,40 @@ function corridor(s,t,wKm,mKm){
   return pts.map(p=>p[0].toFixed(5)+' '+p[1].toFixed(5)).join(' ');
 }
 function square(p,r){const P=localXY(p[1],p[2]);return [[-r,-r],[r,-r],[r,r],[-r,r]].map(([x,y])=>P.from(x,y)).map(q=>q[0].toFixed(5)+' '+q[1].toFixed(5)).join(' ');}
+function bboxAround(pts,padKm){const la=pts.map(p=>p[1]),lo=pts.map(p=>p[2]);const mLa=(Math.min(...la)+Math.max(...la))/2;const dLa=padKm/110.57,dLo=padKm/(111.32*Math.cos(mLa*D2R));return [Math.min(...la)-dLa,Math.min(...lo)-dLo,Math.max(...la)+dLa,Math.max(...lo)+dLo].map(v=>v.toFixed(4)).join(',');}
 function buildQuery(s,t){
   const L=hav(s[1],s[2],t[1],t[2]);
-  const w=Math.max(7,Math.min(15,L*.3)),poly=corridor(s,t,w,6);
-  const main=`way["highway"~"^(motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link)$"](poly:"${poly}");`;
-  const k=r=>`way["highway"~"^(tertiary|tertiary_link|unclassified)$"]["ref"~"^[LK] ?[0-9]"](poly:"${r}");`;
-  const kParts=L>70?k(square(s,9))+k(square(t,9)):k(poly);
-  return `[out:json][timeout:180];(${main}${kParts})->.r;.r out body;.r >;out body qt;(node["place"~"^(city|town|village|suburb)$"](poly:"${poly}");node["amenity"="fuel"](poly:"${poly}");node["tourism"~"^(attraction|museum|theme_park|zoo|viewpoint)$"]["name"](poly:"${poly}");node["historic"~"^(castle|monument|memorial)$"]["name"](poly:"${poly}");node["leisure"~"^(water_park|park)$"]["name"]["wikidata"](poly:"${poly}"););out body qt;`;
+  const hw='way["highway"~"^(motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link)$"]';
+  const kw='way["highway"~"^(tertiary|tertiary_link|unclassified)$"]["ref"~"^[LK] ?[0-9]"]';
+  let area,kParts;
+  if(L<=45){area='('+bboxAround([s,t],6)+')';kParts=kw+area+';';}
+  else{area='(poly:"'+corridor(s,t,Math.max(8,Math.min(14,L*.2)),6)+'")';kParts=kw+'('+bboxAround([s],8)+');'+kw+'('+bboxAround([t],8)+');';}
+  return '[out:json][timeout:90][maxsize:268435456];('+hw+area+';'+kParts+')->.r;.r out body;.r >;out skel qt;node(w.r)["highway"="motorway_junction"];out body qt;('
+    +'node["place"~"^(city|town|village|suburb)$"]'+area+';node["amenity"="fuel"]'+area+';node["tourism"~"^(attraction|museum|theme_park|zoo|viewpoint)$"]["name"]'+area+';node["historic"~"^(castle|monument)$"]["name"]'+area+';);out body qt;';
 }
+let FETCHES=[];
+function abortFetches(){FETCHES.forEach(c=>{try{c.abort();}catch(e){}});FETCHES=[];}
 async function fetchOverpass(q,onProg){
   if(window.__OSM_FIXTURE__)return {text:JSON.stringify(window.__OSM_FIXTURE__),ep:'fixture'};
-  let last;
-  for(const ep of EPS){
-    const ctrl=new AbortController();const to=setTimeout(()=>ctrl.abort(),170000);
+  abortFetches();let won=false;const prog={};
+  const one=ep=>new Promise(async(res,rej)=>{
+    const ctrl=new AbortController();FETCHES.push(ctrl);const to=setTimeout(()=>ctrl.abort(),80000);
+    const host=ep.replace('https://','').split('/')[0];
     try{
-      onProg(0,ep);
-      const res=await fetch(ep,{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:ctrl.signal});
-      if(!res.ok)throw new Error('HTTP '+res.status);
+      const r=await fetch(ep,{method:'POST',body:'data='+encodeURIComponent(q),headers:{'Content-Type':'application/x-www-form-urlencoded'},signal:ctrl.signal});
+      if(!r.ok)throw new Error('HTTP '+r.status+(r.status===429?' (zu viele Anfragen)':r.status===504?' (Server überlastet)':''));
       let text='';
-      if(res.body&&res.body.getReader){const rd=res.body.getReader(),dec=new TextDecoder();let n=0;for(;;){const {done,value}=await rd.read();if(done)break;n+=value.length;text+=dec.decode(value,{stream:true});onProg(n,ep);}text+=dec.decode();}
-      else text=await res.text();
+      if(r.body&&r.body.getReader){const rd=r.body.getReader(),dec=new TextDecoder();let n=0;for(;;){const {done,value}=await rd.read();if(done)break;n+=value.length;text+=dec.decode(value,{stream:true});prog[host]=n;if(!won)onProg(Math.max(...Object.values(prog)),host);}text+=dec.decode();}
+      else text=await r.text();
       clearTimeout(to);
-      if(text.trim()[0]!=='{')throw new Error('keine JSON-Antwort ('+text.slice(0,80)+')');
-      const head=text.slice(0,600);const m=/"remark"\s*:\s*"([^"]*)"/.exec(text.slice(-800));
-      if(m&&/error|timed out|out of memory/i.test(m[1]))throw new Error('Server: '+m[1]);
-      return {text,ep};
-    }catch(e){clearTimeout(to);last=e;DIAG.errors.push(ep.replace('https://','').split('/')[0]+': '+(e.name==='AbortError'?'Zeitüberschreitung':e.message));}
-  }
-  throw last||new Error('Kein Server erreichbar');
+      if(text.trim()[0]!=='{')throw new Error('keine JSON-Antwort ('+text.replace(/<[^>]+>/g,' ').trim().slice(0,90)+')');
+      const m=/"remark"\s*:\s*"([^"]*)"/.exec(text.slice(-800));
+      if(m&&/error|timed out|out of memory|runtime/i.test(m[1]))throw new Error('Server: '+m[1]);
+      res({text,ep:host});
+    }catch(e){clearTimeout(to);if(!won)DIAG.errors.push(host+': '+(e.name==='AbortError'?'Zeitüberschreitung (80 s)':e.message));rej(e);}
+  });
+  const r=await new Promise((res,rej)=>{let n=EPS.length;EPS.forEach(ep=>one(ep).then(v=>{if(!won){won=true;res(v);}},()=>{if(--n===0)rej(new Error('Kein Kartenserver hat geantwortet. Prüfe die Internetverbindung oder versuch es in einer Minute nochmal.'));}));});
+  abortFetches();return r;
 }
 
 /* =========================================================
@@ -648,7 +717,7 @@ function levelPair(mode,idx){
 async function startGame(mode,idx){
   stopLoop();closeOverlays();
   const P=levelPair(mode,idx);
-  LOADING={mode,idx,P,status:'Prüfe Speicher…',bytes:0,err:null,step:0};renderLoading();
+  LOADING={mode,idx,P,status:'Prüfe Speicher…',bytes:0,err:null,step:0,t0:Date.now()};vt(renderLoading);
   const myLoad=LOADING;
   try{
     const ck=QV+'|'+P.key;let text=null,ep='Cache';
@@ -673,7 +742,7 @@ async function startGame(mode,idx){
     setupGame(reg,mode,idx,P);
     Object.assign(DIAG,{level:P.key,source:ep,bytes:text.length,fetchMs,parseMs,...reg.stats,optKm:+G.opt.toFixed(1),closures:G.closedN,startPlace:G.startName,targetPlace:G.targetName+' (r='+G.tRad+' km)',time:new Date().toLocaleString('de-DE')});
     try{localStorage.setItem('abzweig.diag',JSON.stringify(Object.assign({},DIAG,{errors:DIAG.errors.slice(-12)})));}catch(e){}
-    LOADING=null;renderGame();showBriefing();
+    LOADING=null;clearInterval(ldTimer);vt(()=>{renderGame();showBriefing();});
   }catch(e){
     DIAG.errors.push('Start: '+e.message);
     if(LOADING===myLoad){myLoad.err=e.message;renderLoading();}
@@ -995,6 +1064,7 @@ function renderScene(){
   const s=signHTML(dec);
   sc.innerHTML=`<div style="display:contents" class="${isNew?'':''}">${s.html}</div>`;
   if(isNew)sc.querySelectorAll('.vw,.tb,.mast,.umleit').forEach(el=>el.classList.add('enter'));
+  if(G.tapI!==undefined&&G.tapI!==null){const t=sc.querySelector(`[data-op="${G.tapI}"]`);if(t)t.classList.add('tapped');G.tapI=null;}
   setPosts(s.kind==='pfeil'?'one':'two');
   if(isNew&&G.stop!=='start'&&G.stop!=='choose')onNewSign(dec);
 }
@@ -1018,11 +1088,10 @@ function renderDock(){
   const el=document.getElementById('dockbtns');if(!el||!G)return;
   const stopped=G.stop==='choose'||G.stop==='start'||G.stop==='dead';
   const canTurn=(G.edge&&G.edge.rev>=0)||(stopped&&G.decision&&G.decision.eIn&&G.decision.eIn.rev>=0);
-  const sp=save.speed===0.6?'0,6×':save.speed===1.6?'1,6×':'1×';
-  let h=`<button class="cb play press" data-act="play" aria-label="${G.running?'Pause':'Weiterfahren'}" ${stopped||G.stranded?'disabled':''}>${G.running?IC.pause2:IC.play2}</button>`;
-  h+=`<button class="cb press" data-act="speed" aria-label="Tempo ${sp}">${sp}</button>`;
-  h+=`<button class="cb press" data-act="uturn" aria-label="Wenden" ${canTurn&&!G.stranded?'':'disabled'}>${IC.uturn2}</button>`;
-  if(G.fuelNear&&G.fuel<G.fuelMax-1)h+=`<button class="cb fuel press" data-act="refuel" aria-label="Tanken">${IC.pump2}</button>`;
+  let h='';
+  if(!stopped&&!G.stranded)h+=`<button class="dbtn ${G.running?'':'go'} press" data-act="play">${G.running?IC.pause2:IC.play2}<span>${G.running?'Pause':'Weiter'}</span></button>`;
+  if(canTurn&&!G.stranded&&(G.stop==='choose'||G.stop==='dead'||(!G.running&&!stopped)))h+=`<button class="dbtn press" data-act="uturn">${IC.uturn2}<span>Wenden</span></button>`;
+  if(G.fuelNear&&G.fuel<G.fuelMax-1)h+=`<button class="dbtn fuel press" data-act="refuel">${IC.pump2}<span>Tanken</span></button>`;
   el.innerHTML=h;
   const st=document.getElementById('statusline');if(st)st.innerHTML=statusHTML();
   const rd=document.querySelector('.road');if(rd)rd.classList.toggle('stop',!G.running);
@@ -1041,9 +1110,13 @@ function renderGame(){
     </header>
     <footer class="dock glass">
       <div class="left"><div class="status" id="statusline">${statusHTML()}</div><div class="ctrl" id="dockbtns"></div></div>
-      <button class="mini press" data-act="fullmap" aria-label="Karte vergrößern"><canvas id="minicv"></canvas><span class="n">N</span><span class="ex">${IC.expand}</span></button>
-    </footer></div>`;
+      <button class="mini press" id="minibtn" aria-label="Karte aufziehen"><canvas id="minicv"></canvas><span class="n">N</span><span class="ex">${IC.expand}</span><span class="pull"></span></button>
+    </footer>
+    <section class="mapsheet glass" id="mapsheet" aria-label="Karte"><div class="ms-head" id="mshead"><i class="ms-grab"></i><div class="ms-bar"><span>Karte · Norden oben</span><button class="ms-close press" data-act="closemap" aria-label="Karte schließen">${IC.x}</button></div></div>
+      <div class="ms-body"><canvas id="bigcv"></canvas><div class="fm-btns glass"><button class="press" data-act="zin" aria-label="Vergrößern">${svgI('<path d="M12 5v14M5 12h14"/>')}</button><button class="press" data-act="zout" aria-label="Verkleinern">${svgI('<path d="M5 12h14"/>')}</button><button class="press" data-act="zcar" aria-label="Auf Auto zentrieren">${svgI('<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>')}</button></div><div class="ms-paused">Fahrt pausiert</div></div></section>
+  </div>`;
   G.signKey='';renderScene();renderDock();sizeCanvas(document.getElementById('minicv'));drawMini();
+  bindMapGestures();
   startLoop();
 }
 
@@ -1110,7 +1183,7 @@ function tabbar(){
   return `<nav class="tabbar glass" role="tablist">${t('drive',IC.route,'Fahren')}${t('levels',IC.flag,'Level')}${t('album',IC.book,'Album')}${t('settings',IC.gear,'Einstellungen')}</nav>`;
 }
 async function renderHome(tab){
-  stopLoop();G=null;R=null;LOADING=null;if(tab)TAB=tab;
+  stopLoop();G=null;R=null;LOADING=null;FM=null;clearInterval(ldTimer);if(tab)TAB=tab;
   let body='';
   if(TAB==='drive'){
     const nextIdx=Math.min(LEVELS.length-1,Object.keys(save.stars).length<save.unlocked?LEVELS.findIndex((L,i)=>i<save.unlocked&&!save.stars[i]):save.unlocked-1);
@@ -1182,11 +1255,61 @@ function renderLoading(){
     <div class="steps">${steps.map((s,i)=>`<div class="step ${L.err&&i===st?'':i<st?'done':i===st&&!L.err?'act':''}"><span class="si">${i<st?IC.check:''}</span>${s}${i===1?`<em id="ldbytes">${L.bytes?(L.bytes/1048576).toFixed(1).replace('.',',')+' MB':''}</em>`:''}</div>`).join('')}</div>
     ${L.err?`<div class="lerr"><b>Laden fehlgeschlagen.</b><br>${esc(L.err)}</div>`:''}</div>
     ${L.err?`<div class="lbtns"><button class="btn btn-p press" data-act="retry">Nochmal versuchen</button><button class="btn btn-s press" data-act="diag">Diagnose anzeigen</button><button class="btn btn-g press" data-act="home">Zurück</button></div>`
-      :`<p class="lnote">Beim ersten Mal lädt die App die Straßen von OpenStreetMap – je nach Strecke 5 bis 60 Sekunden. Danach ist die Region gespeichert.</p><div class="lbtns"><button class="btn btn-g press" data-act="home">Abbrechen</button></div>`}</main>`;
+      :`<p class="lnote" id="ldhint">Beim ersten Mal lädt die App die Straßen von OpenStreetMap. Danach ist die Region gespeichert.</p><div class="lbtns"><button class="btn btn-g press" data-act="home">Abbrechen</button></div>`}</main>`;
+  clearInterval(ldTimer);if(!L.err){ldTimer=setInterval(updLoad,500);updLoad();}
 }
-function updLoad(){const b=document.getElementById('ldbytes');if(b&&LOADING)b.textContent=(LOADING.bytes/1048576).toFixed(1).replace('.',',')+' MB';}
+let ldTimer=0;
+function updLoad(){const L=LOADING;const b=document.getElementById('ldbytes');if(!L){clearInterval(ldTimer);return;}const sec=Math.round((Date.now()-(L.t0||Date.now()))/1000);
+  if(b)b.textContent=(L.step===1?sec+' s · ':'')+(L.bytes/1048576).toFixed(1).replace('.',',')+' MB';
+  const h=document.getElementById('ldhint');if(h&&L.step===1&&!L.err){h.textContent=L.bytes>0?'Daten kommen an …':sec>25?'Der Kartenserver ist gerade ausgelastet. Die App fragt drei Server gleichzeitig – spätestens nach 80 Sekunden gibt es eine Rückmeldung.':'Warte auf den Kartenserver – der rechnet zuerst und schickt dann alles auf einmal.';}}
 function toast(msg,cls,icon){const t=document.createElement('div');t.className='toast glass '+(cls||'');t.setAttribute('role','status');t.innerHTML=(icon||'')+'<span>'+esc(msg)+'</span>';document.body.appendChild(t);setTimeout(()=>{t.style.transition='opacity .35s,transform .35s';t.style.opacity='0';t.style.transform='translate(-50%,-8px)';},2200);setTimeout(()=>t.remove(),2700);}
 function closeOverlays(){document.querySelectorAll('.ov').forEach(o=>o.remove());}
+
+/* Weiche Bildschirmwechsel */
+function vt(fn){let ran=false;const run=()=>{if(ran)return;ran=true;fn();};const rm=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;if(document.startViewTransition&&!rm){try{document.startViewTransition(run);setTimeout(run,500);return;}catch(e){}}run();}
+
+/* Hinweis beim ersten Schild */
+function showCoach(){
+  if(save.coached||!G)return;
+  const t=document.querySelector('#signs [data-op]');if(!t)return;
+  const r=t.getBoundingClientRect(),g=document.querySelector('.game').getBoundingClientRect();
+  const c=document.createElement('div');c.className='coach';c.id='coach';
+  const x=Math.min(r.left+r.width*0.62,g.width-70),y=r.top+r.height/2;
+  c.innerHTML=`<div class="coach-ring" style="left:${x}px;top:${y}px"></div><div class="coach-hand" style="left:${x}px;top:${y}px">${svgI('<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>')}</div>
+    <div class="coach-bubble glass" style="top:${Math.min(y+r.height/2+18,innerHeight-260)}px"><b>Tippe auf ein Schild</b><span>Dorthin biegst du an der Kreuzung ab. Nochmal tippen hebt es wieder auf.</span></div>`;
+  document.querySelector('.game').appendChild(c);
+}
+function hideCoach(){const c=document.getElementById('coach');if(c){c.classList.add('out');setTimeout(()=>c.remove(),250);}if(!save.coached){save.coached=true;persist();}}
+
+/* Mini-Navi aufziehen */
+let mapGest=null;
+function bindMapGestures(){
+  const mini=document.getElementById('minibtn'),sh=document.getElementById('mapsheet'),head=document.getElementById('mshead'),cv=document.getElementById('bigcv');if(!mini||!sh)return;
+  mini.addEventListener('pointerdown',e=>{mapGest={y:e.clientY,moved:false};});
+  mini.addEventListener('pointermove',e=>{if(mapGest&&e.clientY-mapGest.y<-22&&!mapGest.moved){mapGest.moved=true;openFullMap();}});
+  mini.addEventListener('pointerup',()=>{if(mapGest&&!mapGest.moved)openFullMap();mapGest=null;});
+  let dr=null;
+  head.addEventListener('pointerdown',e=>{if(e.target.closest('[data-act]'))return;dr={y:e.clientY,dy:0};sh.style.transition='none';head.setPointerCapture(e.pointerId);});
+  head.addEventListener('pointermove',e=>{if(!dr)return;dr.dy=Math.max(0,e.clientY-dr.y);sh.style.transform=`translateY(${dr.dy}px)`;});
+  const end=()=>{if(!dr)return;sh.style.transition='';const close=dr.dy>90;sh.style.transform='';dr=null;if(close)closeFullMap();};
+  head.addEventListener('pointerup',end);head.addEventListener('pointercancel',end);
+  let pan=null;
+  cv.addEventListener('pointerdown',e=>{if(!FM)return;pan={x:e.clientX,y:e.clientY,la:FM.la,lo:FM.lo};FM.follow=false;cv.setPointerCapture(e.pointerId);});
+  cv.addEventListener('pointermove',e=>{if(!pan||!FM)return;const kx=111.32*Math.cos(FM.la*D2R);FM.lo=pan.lo-(e.clientX-pan.x)/(kx*FM.ppk);FM.la=pan.la+(e.clientY-pan.y)/(110.57*FM.ppk);drawMap(FM.cv,FM.la,FM.lo,FM.ppk,{big:true});});
+  cv.addEventListener('pointerup',()=>{pan=null;});
+}
+function openFullMap(){
+  if(!G||FM)return;const sh=document.getElementById('mapsheet');if(!sh)return;
+  const was=G.running;G.running=false;const c=carPos();
+  FM={la:c[0],lo:c[1],ppk:16,follow:true,wasRunning:was,el:sh,cv:document.getElementById('bigcv')};
+  sh.classList.add('open');document.querySelector('.game').classList.add('navi-open');haptic();sfx('tap');
+  requestAnimationFrame(()=>{if(!FM)return;sizeCanvas(FM.cv);drawMap(FM.cv,FM.la,FM.lo,FM.ppk,{big:true});});
+  renderDock();
+}
+function closeFullMap(){
+  if(!FM)return;const sh=FM.el;sh.classList.remove('open');const g=document.querySelector('.game');if(g)g.classList.remove('navi-open');
+  if(G&&FM.wasRunning&&!G.stop){G.running=true;G.lastT=performance.now();}FM=null;if(G)renderDock();
+}
 
 /* Sheets */
 function showBriefing(){
@@ -1226,7 +1349,7 @@ async function showDiag(){
 
 /* Ergebnis */
 function finishGame(win,reason){
-  if(!G||G.done)return;G.done=true;G.running=false;stopLoop();if(FM){FM.el.remove();FM=null;}
+  if(!G||G.done)return;G.done=true;G.running=false;stopLoop();FM=null;
   const ratio=G.driven/G.opt,st=win?(ratio<=1.08?3:ratio<=1.25?2:1):0;
   G.prevBest=G.mode==='level'?save.lv[G.idx]:null;
   if(G.mode==='level'&&win){save.stars[G.idx]=Math.max(save.stars[G.idx]||0,st);if(save.unlocked<G.idx+2)save.unlocked=Math.min(LEVELS.length,G.idx+2);
@@ -1236,7 +1359,7 @@ function finishGame(win,reason){
   save.hist.push({s:G.startName,t:G.targetName,d:Date.now(),km:G.driven,opt:G.opt,st,win,sec:G.elapsed});if(save.hist.length>30)save.hist.shift();
   persist();G.result={win,reason,st,ratio};
   if(win){sfx('arrive');haptic();speak('Sie haben Ihr Ziel erreicht.');}else{sfx('fail');speak('Der Tank ist leer.');}
-  renderResult();
+  vt(renderResult);
 }
 function resultView(cv){
   const pts=[...G.trail,...G.optPath.flatMap(e=>[[R.LA[e.from],R.LO[e.from]],[R.LA[e.to],R.LO[e.to]]]),[G.tLat,G.tLon]];
@@ -1310,6 +1433,7 @@ function renderResult(){
    ========================================================= */
 function onOption(i){
   const dec=currentDecision();if(!dec)return;const op=dec.ops[i];if(!op||opClosed(op))return;
+  hideCoach();G.tapI=i;
   if(G.stop==='choose'||G.stop==='start'){onTurn();take(op);return;}
   const key={x:dec.x,eIn:dec.eIn?dec.eIn.id:-1,i};
   if(G.q&&G.q.x===key.x&&G.q.eIn===key.eIn&&G.q.i===i){G.q=null;sfx('tap');}
@@ -1325,13 +1449,13 @@ function uturn(){
 document.addEventListener('click',ev=>{
   audioUnlock();
   const el=ev.target.closest('[data-act],[data-op],[data-lvl],[data-tab],[data-seg]');if(!el||el.disabled)return;
-  if(el.dataset.tab){resetArm=false;sfx('tap');try{window.scrollTo(0,0);}catch(e){}return renderHome(el.dataset.tab);}
+  if(el.dataset.tab){resetArm=false;sfx('tap');haptic();const t=el.dataset.tab;vt(()=>{try{window.scrollTo(0,0);}catch(e){}renderHome(t);});return;}
   if(el.dataset.lvl!==undefined){resetArm=false;return startGame('level',+el.dataset.lvl);}
   if(el.dataset.op!==undefined)return onOption(+el.dataset.op);
   if(el.dataset.seg){const k=el.dataset.seg,v=el.dataset.v;if(k==='speed')save.speed=+v;else save.set[k]=v;persist();sfx('tap');return renderHome();}
   const a=el.dataset.act;
   switch(a){
-    case 'closeov':{const ov=el.closest('.ov');const resume=ov&&ov.dataset.resume;closeOverlays();if(G){if(resume)G.running=true;G.lastT=performance.now();renderDock();}return;}
+    case 'closeov':{const ov=el.closest('.ov');const resume=ov&&ov.dataset.resume;closeOverlays();if(G){if(resume)G.running=true;G.lastT=performance.now();renderDock();if(G.stop==='start'&&!save.coached)setTimeout(showCoach,350);}return;}
     case 'navi':return showNavi();
     case 'play':if(G.stop)return;G.running=!G.running;G.lastT=performance.now();sfx('tap');return renderDock();
     case 'speed':save.speed=save.speed===1?1.6:save.speed===1.6?0.6:1;persist();sfx('tap');return renderDock();
@@ -1345,7 +1469,7 @@ document.addEventListener('click',ev=>{
     case 'endless':resetArm=false;return startGame('endless');
     case 'next':return startGame('level',G.idx+1);
     case 'retry':if(LOADING)return startGame(LOADING.mode,LOADING.idx);return startGame(G.mode,G.idx);
-    case 'home':LOADING=null;cancelAnimationFrame(replayRaf);return renderHome();
+    case 'home':LOADING=null;abortFetches();clearInterval(ldTimer);cancelAnimationFrame(replayRaf);return vt(()=>renderHome());
     case 'replay':return replay();
     case 'share':return doShare();
     case 'diag':return showDiag();
@@ -1357,6 +1481,7 @@ document.addEventListener('click',ev=>{
       if(G.quitArm){if(G.mode==='endless'){save.streak=0;persist();}try{speechSynthesis.cancel();}catch(e){}return renderHome();}
       G.quitArm=true;el.classList.add('arm');toast(G.mode==='endless'?'Nochmal tippen zum Beenden – Serie endet':'Nochmal tippen zum Beenden');
       setTimeout(()=>{if(G&&G.quitArm){G.quitArm=false;const b=document.querySelector('[data-act=quit]');if(b)b.classList.remove('arm');}},2600);return;
+    case 'speedcycle':return;
     case 'reset':
       if(!resetArm){resetArm=true;renderHome();setTimeout(()=>{if(resetArm){resetArm=false;if(!G&&!LOADING&&TAB==='settings')renderHome();}},3000);return;}
       resetArm=false;save=Object.assign({},save,{unlocked:1,stars:{},best:0,streak:0,sights:[],lv:{},hist:[],drives:0,arrived:0,totalKm:0});persist();renderHome();toast('Fortschritt zurückgesetzt');return;
