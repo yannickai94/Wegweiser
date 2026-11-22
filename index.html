@@ -430,6 +430,15 @@ input[type=checkbox].sw:checked::after{transform:translateX(20px)}
 
 .toast{width:max-content;max-width:88vw}
 
+.drivecard{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:4px;padding:22px 26px;border-radius:24px;background:rgba(10,14,20,.55);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);color:#fff;text-align:center;margin-top:40px}
+.drivecard b{font-size:18px}.drivecard span{font-size:14px;color:var(--text2)}
+.dc-car{width:54px;height:54px;border-radius:18px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;margin-bottom:6px;animation:carbob .5s ease-in-out infinite alternate}
+@keyframes carbob{to{transform:translateY(-3px)}}
+.faded{opacity:.35;transition:opacity .25s}
+.chosen{transition:transform .3s}
+.dbtn[disabled]{opacity:.35}
+.dc-car svg{width:30px;height:30px}
+
 </style>
 </head>
 <body>
@@ -437,7 +446,7 @@ input[type=checkbox].sw:checked::after{transform:translateX(20px)}
 <label id="hapt" aria-hidden="true" style="position:fixed;left:-300px;top:0;opacity:0;pointer-events:none"><input type="checkbox" switch tabindex="-1"></label>
 <script>
 'use strict';
-const VERSION='4.1', QV='q4';
+const VERSION='4.2', QV='q4';
 /* =========================================================
    LEVEL (echte Orte in NRW)
    ========================================================= */
@@ -619,6 +628,18 @@ function nearestJunction(R,la,lo,filter){for(let r=0.3;r<=6;r*=2){let best=null,
    ========================================================= */
 function rawOut(R,x,eIn){const o=R.OUT.get(x)||[];return o.map(i=>R.E[i]).filter(q=>!(eIn&&(q.id===eIn.rev||(q.w===eIn.w&&q.to===eIn.from))));}
 function options(R,x,eIn){
+  const key='m'+x+'|'+(eIn?eIn.id:-1);const c=R.opCache.get(key);if(c)return c;
+  const raw=optionsRaw(R,x,eIn),out=[];
+  for(const o of raw.slice().sort((a,b)=>Math.abs(a.turn)-Math.abs(b.turn))){
+    const dup=out.find(p=>p.exit.ident===o.exit.ident&&!o.exit.w.isLink&&Math.abs(angDiff(p.turn,o.turn))<40);
+    if(!dup)out.push(o);
+  }
+  R.opCache.set(key,out);return out;
+}
+function isMinor(o){return !o.exit.w.ref&&!o.exit.w.isLink&&!o.ring&&o.exit.cls!=='A';}
+function isStop(eIn,ops){if(ops.length<2)return false;const c=contOpt(eIn,ops);if(!c||opClosed(c))return true;return ops.some(o=>o!==c&&!isMinor(o));}
+function passOpt(eIn,ops){const c=contOpt(eIn,ops);if(c&&!opClosed(c))return c;if(ops.length===1&&!opClosed(ops[0]))return ops[0];return null;}
+function optionsRaw(R,x,eIn){
   const key=x+'|'+(eIn?eIn.id:-1);const c=R.opCache.get(key);if(c)return c;
   const res=[],seen=new Set(),inB=eIn?eIn.b1:null;
   const add=(path,viaRing)=>{const ex=path[path.length-1];if(seen.has(ex.id))return;const t=inB===null?angDiff(0,ex.b0):angDiff(inB,ex.b0);if(inB!==null&&!viaRing&&Math.abs(t)>160)return;seen.add(ex.id);res.push({path,exit:ex,turn:t,ring:!!viaRing});};
@@ -684,9 +705,10 @@ function optInfo(R,x,op,isMotor){
   let real=false;
   if(dest){real=true;names=dest.slice(0,3).map(n=>{const h=hits.find(x=>x.n===n||x.n.startsWith(n)||n.startsWith(x.n));return {n,km:h?h.km:null};});}
   else{
-    const near=hits.find(h=>h.km>=0.3);if(near)names.push(near);
-    const big=hits.find(h=>h.rank>=2&&h.km>(near?near.km:0)&&h.km>=6&&(!near||h.rank>near.rank||h.km>near.km+8));if(big&&names.length<3)names.push(big);
-    const city=hits.find(h=>h.rank===3&&!names.includes(h));if(city&&names.length<3&&(!big||city.km>big.km+15))names.push(city);
+    const atX=p=>hav(R.LA[x],R.LO[x],p.lat,p.lon);
+    const hits2=hits.filter(h=>{const p=R.places.find(q=>q.name===h.n);return !p||atX(p)>0.7;});
+    const near=hits2.find(h=>h.km>=0.3);if(near)names.push(near);
+    const nb=hits2.find(h=>h!==near&&h.rank>=1&&(!near||h.km>near.km)&&(!here||h.n!==here.name));if(nb)names.push(nb);
     if(!names.length&&hits.length)names.push(hits[0]);
     if(!names.length&&here)names.push({n:here.name,km:null});
     if(!names.length&&op.exit.w.name)names.push({n:op.exit.w.name,km:null});
@@ -800,9 +822,9 @@ function lookahead(){
   let dist=G.edge.len-G.pos;for(const e of G.path)dist+=e.len;
   let cur=G.path.length?G.path[G.path.length-1]:G.edge;
   for(let i=0;i<400&&dist<40;i++){
-    const ops=options(R,cur.to,cur);
-    if(ops.length!==1||opClosed(ops[0])){const prev=G.next;G.next={x:cur.to,eIn:cur,ops,base:dist+G.pos};if(!prev||prev.x!==G.next.x||prev.eIn!==G.next.eIn)G.signShown=performance.now();return;}
-    for(const e of ops[0].path)dist+=e.len;cur=ops[0].path[ops[0].path.length-1];
+    const ops=options(R,cur.to,cur);const pk=isStop(cur,ops)?null:passOpt(cur,ops);
+    if(!pk){const prev=G.next;G.next={x:cur.to,eIn:cur,ops,base:dist+G.pos};if(!prev||prev.x!==G.next.x||prev.eIn!==G.next.eIn)G.signShown=performance.now();return;}
+    for(const e of pk.path)dist+=e.len;cur=pk.path[pk.path.length-1];
   }
   G.next=null;
 }
@@ -811,16 +833,13 @@ function take(op){
   const cont=G.decision?contOpt(G.decision.eIn,G.decision.ops):null;
   if(op!==cont)G.turns++;
   G.edge=op.path[0];G.path=op.path.slice(1);G.pos=0;G.stop=null;G.decision=null;G.q=null;G.atNode=null;
-  lookahead();G.running=true;renderScene();renderDock();
+  lookahead();const d=G.next?nextDist():20;G.vDrive=Math.max(0.05,d/(1.7/Math.max(.6,save.speed)));G.running=true;renderScene();renderDock();
 }
 function arriveNode(){
   if(G.path.length){G.edge=G.path.shift();G.pos=0;lookahead();return true;}
   const eIn=G.edge,x=eIn.to,ops=options(R,x,eIn);
-  let pick=null;
-  if(G.q&&G.q.x===x&&G.q.eIn===eIn.id){const o=ops[G.q.i];if(o&&!opClosed(o))pick=o;}
-  if(!pick){const c=contOpt(eIn,ops);if(c&&!opClosed(c))pick=c;else if(ops.length===1&&!opClosed(ops[0]))pick=ops[0];}
+  const pick=isStop(eIn,ops)?null:passOpt(eIn,ops);
   if(!pick){G.running=false;G.atNode=x;G.edge=null;G.path=[];G.decision={x,eIn,ops};G.stop=ops.length?'choose':'dead';G.next=null;G.q=null;renderScene();renderDock();if(ops.length)onStopChoose();return false;}
-  if(pick!==contOpt(eIn,ops)){G.turns++;onTurn();}
   G.edge=pick.path[0];G.path=pick.path.slice(1);G.pos=0;G.q=null;
   lookahead();renderScene();
   return true;
@@ -829,9 +848,7 @@ let lastUi=0,lastSlow=0;
 function tick(now){
   const dt=Math.min(0.1,(now-G.lastT)/1000);G.lastT=now;if(G.running)G.elapsed+=dt;
   if(G.running&&G.edge){
-    let v=(SPEED[G.edge.cls]||0.4)*(G.edge.w.isLink?0.6:1)*save.speed;
-    const nd=nextDist();
-    if(nd!==null){const age=(now-G.signShown)/1000,need=2.8/Math.max(.6,save.speed),rem=Math.max(.3,need-age);v=Math.min(v,Math.max(.03,nd/rem));}
+    let v=G.vDrive||0.5;
     let mv=v*dt;
     if(mv>G.fuel){mv=Math.max(0,G.fuel);}
     while(mv>1e-9&&G.running){
@@ -862,7 +879,7 @@ function updateLive(now){
   }
   const d=nextDist(),el=document.getElementById('distchip');
   if(G.q&&!G.qSpoken&&d!==null&&d<0.35&&G.next){G.qSpoken=true;const op=G.next.ops[G.q.i];if(op)onQueuedSoon(op);}
-  if(el){if(G.stop==='choose'||G.stop==='start'){el.textContent='Bitte Richtung wählen';el.className='dist now';}else if(d!==null){el.textContent=d<0.05?'jetzt':'in '+fmtKm(d);el.className='dist'+(d<0.15?' now':'');}else el.textContent='';}
+  if(el){if(G.stop==='choose'||G.stop==='start'){el.textContent='Bitte Richtung wählen';el.className='dist now';}else if(d!==null){el.textContent='Unterwegs · noch '+fmtKm(Math.max(0,d));el.className='dist';}else el.textContent='';}
   const hud=document.getElementById('tankrow');if(hud)hud.innerHTML=tankHTML();
   const st=document.getElementById('statusline');if(st)st.innerHTML=statusHTML();
   const rd=document.querySelector('.road');if(rd){rd.classList.toggle('stop',!G.running);}
@@ -890,11 +907,14 @@ function badge(ref){if(!ref)return '';const c=ref[0];return `<span class="bd ${c
 const sectorOf=t=>t<-30?'L':t>30?'R':'S';
 const qAng=t=>Math.max(-135,Math.min(135,Math.round(t/45)*45));
 const GESP=`<div class="gesperrt"><b>GESPERRT</b></div>`;
-function currentDecision(){return G.stop==='choose'||G.stop==='start'?G.decision:G.next;}
+function currentDecision(){return G.stop==='choose'||G.stop==='start'?G.decision:null;}
 function signItems(dec){
   const isMotor=!!(dec.eIn&&dec.eIn.cls==='A');
   const cont=contOpt(dec.eIn,dec.ops);
-  return dec.ops.map((op,i)=>{const inf=optInfo(R,dec.x,op,isMotor&&op.exit.cls==='A'&&!op.exit.w.isLink);return {i,op,inf,turn:op.turn,sector:sectorOf(op.turn),q:qAng(op.turn),closed:opClosed(op),cont:op===cont};});
+  const items=dec.ops.map((op,i)=>{const inf=optInfo(R,dec.x,op,isMotor&&op.exit.cls==='A'&&!op.exit.w.isLink);return {i,op,inf:Object.assign({},inf,{names:inf.names.slice()}),turn:op.turn,sector:sectorOf(op.turn),q:qAng(op.turn),closed:opClosed(op),cont:op===cont};});
+  const best={};items.forEach(it=>it.inf.names.forEach(n=>{const k=n.n;if(!best[k]||(n.km??99)<(best[k].km??99))best[k]={km:n.km,i:it.i};}));
+  items.forEach(it=>{const kept=it.inf.names.filter(n=>best[n.n].i===it.i);it.inf.names=kept.length?kept:[];if(!it.inf.names.length)it.inf.names=[{n:it.cont?'Geradeaus':(it.inf.roadName||it.inf.refs[0]||'Richtung '+dirWord(it.turn)),km:null}];});
+  return items;
 }
 function isSel(dec,i){return G.q&&G.q.x===dec.x&&G.q.eIn===(dec.eIn?dec.eIn.id:-1)&&G.q.i===i;}
 function namesHTML(names,km){if(!names.length)return `<div class="nm"><span>–</span></div>`;return names.map(n=>`<div class="nm"><span>${esc(n.n)}</span>${km&&n.km!=null?`<em>${n.km<1?'1':Math.round(n.km)} km</em>`:''}</div>`).join('');}
@@ -1038,7 +1058,7 @@ function onNewSign(dec){
   if(!G||!dec||!dec.eIn)return;
   if(dec.eIn.cls==='A'){const nt=R.NT[dec.x];const ex=dec.ops.find(o=>o.exit.w.isLink);if(nt&&ex){sfx('sign');speak(`Ausfahrt ${nt.ref?nt.ref+', ':''}${nt.name||''}`);}else if(nt&&/kreuz|dreieck/i.test(nt.name||'')){sfx('sign');speak(nt.name);}}
 }
-function onStopChoose(){sfx('stop');haptic();speak('Kreuzung. Bitte Richtung wählen.');}
+function onStopChoose(){sfx('stop');haptic();if(G&&G.decision)onNewSign(G.decision);}
 function onQueuedSoon(op){speak(op.exit.w.isLink&&G.next&&G.next.eIn&&G.next.eIn.cls==='A'?'Gleich Ausfahrt nehmen':`Gleich ${dirWord(op.turn)} abbiegen`);}
 function onTurn(){sfx('blink');haptic();}
 
@@ -1054,7 +1074,7 @@ function renderHere(){const el=document.getElementById('here');if(el)el.innerHTM
 function renderScene(){
   const sc=document.getElementById('signs');if(!sc||!G)return;
   const dec=currentDecision();
-  if(!dec){if(G.signKey!=='none'){sc.innerHTML=`<div class="note enter">${G.stop==='dead'?'Sackgasse – bitte wenden.':'Freie Fahrt – keine Kreuzung in Sicht.'}</div>`;G.signKey='none';setPosts('two');}return;}
+  if(!dec){const k='none|'+G.stop;if(G.signKey!==k){const road=G.edge&&(G.edge.w.ref||G.edge.w.name);sc.innerHTML=G.stop==='dead'?`<div class="note enter">Sackgasse – tippe unten auf „Wenden“.</div>`:`<div class="drivecard enter"><div class="dc-car">${svgI('<path d="M5 17h14M6 17l1.5-5h9L18 17M7 12l1.5-4h7L17 12"/><circle cx="8" cy="17.5" r="1.8"/><circle cx="16" cy="17.5" r="1.8"/>')}</div><b>Unterwegs${road?' auf '+esc(road):''}</b><span>zur nächsten Kreuzung …</span></div>`;G.signKey=k;setPosts('two');}return;}
   const base=dec.x+'|'+(dec.eIn?dec.eIn.id:-1);
   const key=base+'|'+(G.q?G.q.i:'-')+'|'+G.stop;
   if(key===G.signKey)return;
@@ -1066,32 +1086,23 @@ function renderScene(){
   if(isNew)sc.querySelectorAll('.vw,.tb,.mast,.umleit').forEach(el=>el.classList.add('enter'));
   if(G.tapI!==undefined&&G.tapI!==null){const t=sc.querySelector(`[data-op="${G.tapI}"]`);if(t)t.classList.add('tapped');G.tapI=null;}
   setPosts(s.kind==='pfeil'?'one':'two');
-  if(isNew&&G.stop!=='start'&&G.stop!=='choose')onNewSign(dec);
 }
 function setPosts(k){const p=document.querySelector('.posts');if(p)p.className='posts '+k;}
 function tankHTML(){const p=Math.max(0,G.fuel/G.fuelMax),col=p>.5?'var(--good)':p>.25?'var(--warn)':'var(--bad)';return `${IC.fuel2}<div class="bar" role="meter" aria-label="Tank" aria-valuenow="${Math.round(p*100)}" aria-valuemin="0" aria-valuemax="100"><i style="width:${(Math.min(1,p)*100).toFixed(1)}%;background:${col}"></i></div><b>${Math.max(0,Math.round(G.fuel))} km</b>`;}
 function statusHTML(){
   if(G.stranded)return `<div class="road1"><span class="warnc">Tank leer</span></div>Du bist liegengeblieben.`;
-  if(G.stop==='start')return `<div class="road1">Start in ${esc(G.startName)}</div>Tippe auf ein Schild, um loszufahren.`;
-  if(G.stop==='choose')return `<div class="road1">Kreuzung</div><span class="acc">Bitte Richtung wählen</span>`;
+  const e=G.edge||(G.decision&&G.decision.eIn);
+  const road=e?(e.w.isLink?'Auf-/Abfahrt':(e.w.ref?badge(e.w.ref)+' ':'')+esc(e.w.name||'')):'';
+  if(G.stop==='start')return `<div class="road1">Start in ${esc(G.startName)}</div><span class="acc">Tippe auf ein Schild, um loszufahren</span>`;
+  if(G.stop==='choose')return `<div class="road1">${road||'Kreuzung'}</div><span class="acc">Wähle eine Richtung am Schild</span>`;
   if(G.stop==='dead')return `<div class="road1">Sackgasse</div>Tippe auf „Wenden“.`;
-  const e=G.edge;if(!e)return '';
-  const name=e.w.isLink?'Auf-/Abfahrt':(e.w.name&&e.w.ref?esc(e.w.name):e.w.ref?'':esc(e.w.name||'Straße'));
-  const l1=`<div class="road1">${e.w.ref&&!e.w.isLink?badge(e.w.ref):''}<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</span></div>`;
-  let l2;
-  if(G.q){const dec=G.next;const op=dec&&dec.ops[G.q.i];l2=`<span class="acc">Vorgemerkt: ${op?dirWord(op.turn):'abbiegen'}</span>`;}
-  else if(!G.running)l2='Pausiert';
-  else l2=`${G.driven.toFixed(1).replace('.',',')} km · ${G.turns} Abzweig${G.turns===1?'':'e'}`;
-  return l1+l2;
+  return `<div class="road1">${road||'Unterwegs'}</div>${G.driven.toFixed(1).replace('.',',')} km · ${G.turns} Abzweig${G.turns===1?'':'e'}`;
 }
+function canUturn(){if(G.stranded||G.running)return false;const e=G.decision&&G.decision.eIn;return !!(e&&e.rev>=0);}
 function renderDock(){
   const el=document.getElementById('dockbtns');if(!el||!G)return;
-  const stopped=G.stop==='choose'||G.stop==='start'||G.stop==='dead';
-  const canTurn=(G.edge&&G.edge.rev>=0)||(stopped&&G.decision&&G.decision.eIn&&G.decision.eIn.rev>=0);
-  let h='';
-  if(!stopped&&!G.stranded)h+=`<button class="dbtn ${G.running?'':'go'} press" data-act="play">${G.running?IC.pause2:IC.play2}<span>${G.running?'Pause':'Weiter'}</span></button>`;
-  if(canTurn&&!G.stranded&&(G.stop==='choose'||G.stop==='dead'||(!G.running&&!stopped)))h+=`<button class="dbtn press" data-act="uturn">${IC.uturn2}<span>Wenden</span></button>`;
-  if(G.fuelNear&&G.fuel<G.fuelMax-1)h+=`<button class="dbtn fuel press" data-act="refuel">${IC.pump2}<span>Tanken</span></button>`;
+  let h=`<button class="dbtn press" data-act="uturn" ${canUturn()?'':'disabled'}>${IC.uturn2}<span>Wenden</span></button>`;
+  if(G.fuelNear&&G.fuel<G.fuelMax-1&&!G.running)h+=`<button class="dbtn fuel press" data-act="refuel">${IC.pump2}<span>Tanken</span></button>`;
   el.innerHTML=h;
   const st=document.getElementById('statusline');if(st)st.innerHTML=statusHTML();
   const rd=document.querySelector('.road');if(rd)rd.classList.toggle('stop',!G.running);
@@ -1230,7 +1241,7 @@ function greet(){const h=new Date().getHours();return h<11?'Guten Morgen':h<18?'
 function showOnboarding(){
   const sl=[
     {h:'Nur Schilder.<br>Kein Navi.',p:'Fahr auf echten Straßen in NRW von A nach B – du siehst nur die Wegweiser, die dort wirklich stehen.',i:`<div class="pw R c-y" style="width:86%;pointer-events:none"><div class="o"><div class="m"><div class="i"><div class="names"><div class="nm"><span>Werne</span><em>8 km</em></div><div class="nm"><span>Hamm</span><em>24 km</em></div></div><span class="bd bd-b">B 54</span></div></div></div></div>`},
-    {h:'Antippen heißt<br>abbiegen.',p:'Du fährst automatisch weiter. Tippe auf ein Schild, um an der nächsten Kreuzung dorthin abzubiegen – nochmal tippen hebt es auf.',i:`<div style="position:relative;width:88%"><div class="tb y"><div class="tb-in"><div class="tr sel">${arrowSVG(-90)}<div class="names"><div class="nm"><span>Selm</span></div><div class="nm"><span>Lüdinghausen</span></div></div><span class="bd bd-l">L 507</span><span class="queued-tag">VORGEMERKT</span></div><div class="tr rt">${arrowSVG(90)}<div class="names"><div class="nm"><span>Bergkamen</span></div></div><span class="bd bd-l">L 518</span></div></div></div></div>`},
+    {h:'Antippen heißt<br>losfahren.',p:'An jeder Kreuzung hältst du an. Tippe auf ein Schild – du fährst in diese Richtung bis zur nächsten Kreuzung. Mit „Wenden“ geht’s zurück.',i:`<div style="position:relative;width:88%"><div class="tb y"><div class="tb-in"><div class="tr sel">${arrowSVG(-90)}<div class="names"><div class="nm"><span>Selm</span></div><div class="nm"><span>Lüdinghausen</span></div></div><span class="bd bd-l">L 507</span></div><div class="tr rt">${arrowSVG(90)}<div class="names"><div class="nm"><span>Bergkamen</span></div></div><span class="bd bd-l">L 518</span></div></div></div></div>`},
     {h:'Dein Mini-Navi<br>zeigt kein Ziel.',p:'Unten rechts siehst du, wo du bist – Norden oben. Wo dein Ziel liegt, musst du selbst wissen. Für Notfälle gibt es Navi-Blicke.',i:`<svg viewBox="0 0 220 220" width="220" height="220" aria-hidden="true"><rect width="220" height="220" rx="34" fill="#0f1418" stroke="rgba(255,255,255,.12)"/><path d="M20 160 C70 150 90 120 120 110 S190 70 205 40" stroke="#d9b44a" stroke-width="5" fill="none"/><path d="M40 20 L95 205" stroke="#4f8ee8" stroke-width="7" fill="none"/><path d="M120 110 L170 200" stroke="#8a96a3" stroke-width="3" fill="none"/><path d="M10 90 L120 110" stroke="#4a545e" stroke-width="2.5" fill="none"/><path d="M60 162 L118 113" stroke="#ff8a2a" stroke-width="5" stroke-linecap="round" fill="none"/><g transform="translate(118 112) rotate(50)"><path d="M0 -12 L9 10 L0 5 L-9 10 Z" fill="#fff" stroke="#ff8a2a" stroke-width="2.5"/></g><rect x="12" y="12" width="26" height="26" rx="13" fill="rgba(10,14,20,.8)"/><text x="25" y="30" fill="#b2b9c1" font-size="12" font-weight="900" text-anchor="middle" font-family="-apple-system">N</text></svg>`}
   ];
   const el=document.createElement('div');el.className='onb';el.setAttribute('role','dialog');el.setAttribute('aria-label','Einführung');
@@ -1276,7 +1287,7 @@ function showCoach(){
   const c=document.createElement('div');c.className='coach';c.id='coach';
   const x=Math.min(r.left+r.width*0.62,g.width-70),y=r.top+r.height/2;
   c.innerHTML=`<div class="coach-ring" style="left:${x}px;top:${y}px"></div><div class="coach-hand" style="left:${x}px;top:${y}px">${svgI('<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>')}</div>
-    <div class="coach-bubble glass" style="top:${Math.min(y+r.height/2+18,innerHeight-260)}px"><b>Tippe auf ein Schild</b><span>Dorthin biegst du an der Kreuzung ab. Nochmal tippen hebt es wieder auf.</span></div>`;
+    <div class="coach-bubble glass" style="top:${Math.min(y+r.height/2+18,innerHeight-260)}px"><b>Tippe auf ein Schild</b><span>Dann fährst du in diese Richtung bis zur nächsten Kreuzung – dort hältst du wieder an.</span></div>`;
   document.querySelector('.game').appendChild(c);
 }
 function hideCoach(){const c=document.getElementById('coach');if(c){c.classList.add('out');setTimeout(()=>c.remove(),250);}if(!save.coached){save.coached=true;persist();}}
@@ -1432,19 +1443,15 @@ function renderResult(){
    EVENTS
    ========================================================= */
 function onOption(i){
-  const dec=currentDecision();if(!dec)return;const op=dec.ops[i];if(!op||opClosed(op))return;
-  hideCoach();G.tapI=i;
-  if(G.stop==='choose'||G.stop==='start'){onTurn();take(op);return;}
-  const key={x:dec.x,eIn:dec.eIn?dec.eIn.id:-1,i};
-  if(G.q&&G.q.x===key.x&&G.q.eIn===key.eIn&&G.q.i===i){G.q=null;sfx('tap');}
-  else if(op===contOpt(dec.eIn,dec.ops)){G.q=null;sfx('tap');}
-  else{G.q=key;G.qSpoken=false;sfx('blink');haptic();}
-  renderScene();renderDock();
+  const dec=currentDecision();if(!dec||G.running||G.busy)return;const op=dec.ops[i];if(!op||opClosed(op))return;
+  G.busy=true;hideCoach();G.tapI=i;onTurn();
+  const sc=document.getElementById('signs');const t=sc&&sc.querySelector(`[data-op="${i}"]`);
+  if(t){t.classList.add('tapped','chosen');sc.querySelectorAll('[data-op]').forEach(x=>{if(x!==t)x.classList.add('faded');});}
+  G.running=false;setTimeout(()=>{if(G&&!G.done){G.busy=false;take(op);}},380);
 }
 function uturn(){
-  if(G.stranded)return;onTurn();
-  if(G.edge&&G.edge.rev>=0){const e=R.E[G.edge.rev];G.pos=e.len-G.pos;G.edge=e;G.path=[];G.q=null;G.turns++;lookahead();G.running=true;renderScene();renderDock();return;}
-  if(G.decision&&G.decision.eIn&&G.decision.eIn.rev>=0){const e=R.E[G.decision.eIn.rev];G.edge=e;G.pos=0;G.path=[];G.stop=null;G.decision=null;G.atNode=null;G.q=null;G.turns++;lookahead();G.running=true;renderScene();renderDock();}
+  if(!G||!canUturn())return;const e=R.E[G.decision.eIn.rev];onTurn();G.turns++;
+  take({path:[e],exit:e,turn:180});
 }
 document.addEventListener('click',ev=>{
   audioUnlock();
