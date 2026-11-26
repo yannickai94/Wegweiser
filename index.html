@@ -439,6 +439,9 @@ input[type=checkbox].sw:checked::after{transform:translateX(20px)}
 .dbtn[disabled]{opacity:.35}
 .dc-car svg{width:30px;height:30px}
 
+.town-h{justify-content:space-between;font-size:17px;letter-spacing:.5px;padding:4px 6px 6px}
+.town-h small{font-family:var(--sys);font-size:11px;font-weight:700;letter-spacing:.3px;opacity:.7}
+
 </style>
 </head>
 <body>
@@ -446,7 +449,7 @@ input[type=checkbox].sw:checked::after{transform:translateX(20px)}
 <label id="hapt" aria-hidden="true" style="position:fixed;left:-300px;top:0;opacity:0;pointer-events:none"><input type="checkbox" switch tabindex="-1"></label>
 <script>
 'use strict';
-const VERSION='4.2', QV='q4';
+const VERSION='4.3', QV='q4';
 /* =========================================================
    LEVEL (echte Orte in NRW)
    ========================================================= */
@@ -554,7 +557,7 @@ function gadd(g,la,lo,v){const k=gk(la,lo);let a=g.get(k);if(!a){a=[];g.set(k,a)
 function gnear(g,la,lo,r){const dl=r/111,dn=r/(111*Math.cos(la*D2R));const out=[];for(let a=Math.floor((la-dl)/GS);a<=Math.floor((la+dl)/GS);a++)for(let b=Math.floor((lo-dn)/GS);b<=Math.floor((lo+dn)/GS);b++){const arr=g.get(a*40000+b);if(arr)for(const v of arr)out.push(v);}return out;}
 const HW=/^(motorway|motorway_link|trunk|trunk_link|primary|primary_link|secondary|secondary_link|tertiary|tertiary_link|unclassified)$/;
 const RANK={city:3,town:2,village:1,suburb:0};
-const PRAD={3:4.0,2:2.0,1:0.9,0:0.7};
+const PRAD={3:5.0,2:2.2,1:1.0,0:0.7};
 function normRef(r){return (r||'').split(';')[0].trim().replace(/^([ABLK])\s*(\d)/,'$1 $2');}
 function buildGraph(data){
   const t0=performance.now();
@@ -626,6 +629,40 @@ function nearestJunction(R,la,lo,filter){for(let r=0.3;r<=6;r*=2){let best=null,
 /* =========================================================
    KREUZUNGEN, OPTIONEN, SCHILDINHALTE
    ========================================================= */
+function townAt(x,eIn){
+  if(!G||(eIn&&eIn.cls==='A'&&!eIn.w.isLink))return null;
+  const p=placeAt(R,R.LA[x],R.LO[x]);
+  if(!p||p.name===G.townDone||p.name===G.targetName)return null;return p;
+}
+function townExits(x,eIn,P){
+  const key='t'+x+'|'+(eIn?eIn.id:-1);const c=R.opCache.get(key);if(c)return c;
+  const rad=PRAD[P.rank],inside=n=>hav(P.lat,P.lon,R.LA[n],R.LO[n])<=rad;
+  const n=R.LA.length,dist=new Map(),pe=new Map(),done=new Set();dist.set(x,0);
+  const H=[[0,x]];const cands=[];
+  while(H.length){
+    H.sort((a,b)=>b[0]-a[0]);const [d,u]=H.pop();if(done.has(u))continue;done.add(u);if(d>rad*4)break;
+    for(const id of (R.OUT.get(u)||[])){const e=R.E[id];if(e.closed)continue;if(eIn&&u===x&&e.id===eIn.rev)continue;
+      const nd=d+e.len;
+      if(!inside(e.to)){if(inside(u)||u===x)cands.push({d:nd,u,e});continue;}
+      if(nd<(dist.get(e.to)??1e9)){dist.set(e.to,nd);pe.set(e.to,id);H.push([nd,e.to]);}}
+  }
+  const pathTo=(u,last)=>{const p=[last];let v=u;let g=0;while(v!==x&&pe.has(v)&&g++<5000){const e=R.E[pe.get(v)];p.unshift(e);v=e.from;}return p;};
+  const sig=c=>!!(c.e.w.ref||c.e.w.isLink||c.e.cls==='A');
+  let pool=cands.filter(sig);if(!pool.length)pool=cands;
+  const entryB=eIn?bearing(P.lat,P.lon,R.LA[eIn.from],R.LO[eIn.from]):null;
+  const out=[];
+  for(const c of pool.sort((a,b)=>a.d-b.d)){
+    const b=bearing(P.lat,P.lon,R.LA[c.e.to],R.LO[c.e.to]);
+    if(entryB!==null&&c.e.ident===eIn.ident&&Math.abs(angDiff(entryB,b))<35)continue;
+    if(out.some(o=>o.exit.ident===c.e.ident&&Math.abs(angDiff(o.brg,b))<50))continue;
+    if(out.some(o=>Math.abs(angDiff(o.brg,b))<12))continue;
+    const path=pathTo(c.u,c.e);if(path[0].from!==x)continue;
+    out.push({path,exit:c.e,brg:b,turn:angDiff(0,bearing(R.LA[x],R.LO[x],R.LA[c.e.to],R.LO[c.e.to])),town:true,dist:c.d});
+    if(out.length>=7)break;
+  }
+  out.sort((a,b)=>a.brg-b.brg);
+  R.opCache.set(key,out);return out;
+}
 function rawOut(R,x,eIn){const o=R.OUT.get(x)||[];return o.map(i=>R.E[i]).filter(q=>!(eIn&&(q.id===eIn.rev||(q.w===eIn.w&&q.to===eIn.from))));}
 function options(R,x,eIn){
   const key='m'+x+'|'+(eIn?eIn.id:-1);const c=R.opCache.get(key);if(c)return c;
@@ -645,11 +682,13 @@ function optionsRaw(R,x,eIn){
   const add=(path,viaRing)=>{const ex=path[path.length-1];if(seen.has(ex.id))return;const t=inB===null?angDiff(0,ex.b0):angDiff(inB,ex.b0);if(inB!==null&&!viaRing&&Math.abs(t)>160)return;seen.add(ex.id);res.push({path,exit:ex,turn:t,ring:!!viaRing});};
   for(const o of rawOut(R,x,eIn)){
     if(o.w.rb&&!(eIn&&eIn.w.rb)){
-      let ring=[o],cur=o,g=0;
+      let ring=[o],cur=o,g=0;const ex=[];
       while(g++<60){const n=cur.to;if(n===x)break;
         const outs=(R.OUT.get(n)||[]).map(i=>R.E[i]);
-        for(const q of outs)if(!q.w.rb)add([...ring,q],true);
+        for(const q of outs)if(!q.w.rb&&!(eIn&&q.rev===eIn.id))ex.push([...ring,q]);
         const nx=outs.find(q=>q.w.rb);if(!nx)break;ring=[...ring,nx];cur=nx;}
+      if(ex.length){const tb=p=>Math.abs(inB===null?0:angDiff(inB,p[p.length-1].b0));const same=eIn?ex.filter(p=>p[p.length-1].ident===eIn.ident):[];const best=(same.length?same:ex).sort((a,b)=>tb(a)-tb(b))[0];
+        const exE=best[best.length-1];if(!seen.has(exE.id)){seen.add(exE.id);res.push({path:best,exit:exE,turn:inB===null?angDiff(0,exE.b0):angDiff(inB,exE.b0),ring:false,viaRb:true});}}
     }else if(o.len<0.04&&!o.w.rb){
       const outs=rawOut(R,o.to,o);
       if(!outs.length)add([o]);
@@ -776,7 +815,7 @@ function setupGame(reg,mode,idx,P){
   const sp=findPlace(R,P.s),tp=findPlace(R,P.t);
   const startNode=nearestJunction(R,sp.lat,sp.lon,n=>(R.OUT.get(n)||[]).some(id=>R.E[id].cls!=='A'));
   if(startNode===null)throw new Error('Kein Startpunkt im Straßennetz');
-  let tRad=Math.max(0.7,PRAD[tp.rank]*0.6);
+  let tRad=PRAD[tp.rank]||1.5;
   const goalsFor=r=>{const s=new Set();for(const n of gnear(R.juncGrid,tp.lat,tp.lon,r))if(hav(tp.lat,tp.lon,R.LA[n],R.LO[n])<=r)s.add(n);return s;};
   let goals=goalsFor(tRad),res=dijkstra(R,startNode,goals);
   if(res.goal<0){tRad=3;goals=goalsFor(tRad);res=dijkstra(R,startNode,goals);}
@@ -800,7 +839,7 @@ function setupGame(reg,mode,idx,P){
      jokers:P.j,tip:P.tip,closedN:closed.length,closedEdges:closed,
      edge:null,pos:0,path:[],atNode:startNode,stop:'start',q:null,next:null,signKey:'',turns:0,trail:[[sp.lat,sp.lon]],trailAcc:0,
      place:null,usedFuel:new Set(),newSights:[],sightSeen:new Set(),stranded:false,quitArm:false,lastT:0,running:false,fuelNear:null,signShown:0,elapsed:0,qSpoken:false};
-  G.decision={x:startNode,eIn:null,ops:options(R,startNode,null)};
+  {const P0=placeAt(R,R.LA[startNode],R.LO[startNode]);const te=P0?townExits(startNode,null,P0):[];G.decision=te.length?{x:startNode,eIn:null,ops:te,town:P0}:{x:startNode,eIn:null,ops:options(R,startNode,null)};}
   G.place=placeAt(R,R.LA[startNode],R.LO[startNode]);
 }
 
@@ -822,6 +861,7 @@ function lookahead(){
   let dist=G.edge.len-G.pos;for(const e of G.path)dist+=e.len;
   let cur=G.path.length?G.path[G.path.length-1]:G.edge;
   for(let i=0;i<400&&dist<40;i++){
+    const tw=townAt(cur.to,cur);if(tw&&townExits(cur.to,cur,tw).length){const prev=G.next;G.next={x:cur.to,eIn:cur,ops:[],base:dist+G.pos};if(!prev||prev.x!==G.next.x)G.signShown=performance.now();return;}
     const ops=options(R,cur.to,cur);const pk=isStop(cur,ops)?null:passOpt(cur,ops);
     if(!pk){const prev=G.next;G.next={x:cur.to,eIn:cur,ops,base:dist+G.pos};if(!prev||prev.x!==G.next.x||prev.eIn!==G.next.eIn)G.signShown=performance.now();return;}
     for(const e of pk.path)dist+=e.len;cur=pk.path[pk.path.length-1];
@@ -830,16 +870,19 @@ function lookahead(){
 }
 function nextDist(){return G.next?G.next.base-G.pos:null;}
 function take(op){
-  const cont=G.decision?contOpt(G.decision.eIn,G.decision.ops):null;
+  const cont=G.decision&&!G.decision.town?contOpt(G.decision.eIn,G.decision.ops):null;
+  if(G.decision&&G.decision.town)G.townDone=G.decision.town.name;
   if(op!==cont)G.turns++;
   G.edge=op.path[0];G.path=op.path.slice(1);G.pos=0;G.stop=null;G.decision=null;G.q=null;G.atNode=null;
   lookahead();const d=G.next?nextDist():20;G.vDrive=Math.max(0.05,d/(1.7/Math.max(.6,save.speed)));G.running=true;renderScene();renderDock();
 }
 function arriveNode(){
   if(G.path.length){G.edge=G.path.shift();G.pos=0;lookahead();return true;}
-  const eIn=G.edge,x=eIn.to,ops=options(R,x,eIn);
-  const pick=isStop(eIn,ops)?null:passOpt(eIn,ops);
-  if(!pick){G.running=false;G.atNode=x;G.edge=null;G.path=[];G.decision={x,eIn,ops};G.stop=ops.length?'choose':'dead';G.next=null;G.q=null;renderScene();renderDock();if(ops.length)onStopChoose();return false;}
+  const eIn=G.edge,x=eIn.to;
+  const tw=townAt(x,eIn),te=tw?townExits(x,eIn,tw):[];
+  const ops=te.length?te:options(R,x,eIn);
+  const pick=te.length?null:(isStop(eIn,ops)?null:passOpt(eIn,ops));
+  if(!pick){G.running=false;G.atNode=x;G.edge=null;G.path=[];G.decision=te.length?{x,eIn,ops,town:tw}:{x,eIn,ops};G.stop=ops.length?'choose':'dead';G.next=null;G.q=null;renderScene();renderDock();if(ops.length)onStopChoose();return false;}
   G.edge=pick.path[0];G.path=pick.path.slice(1);G.pos=0;G.q=null;
   lookahead();renderScene();
   return true;
@@ -911,15 +954,22 @@ function currentDecision(){return G.stop==='choose'||G.stop==='start'?G.decision
 function signItems(dec){
   const isMotor=!!(dec.eIn&&dec.eIn.cls==='A');
   const cont=contOpt(dec.eIn,dec.ops);
-  const items=dec.ops.map((op,i)=>{const inf=optInfo(R,dec.x,op,isMotor&&op.exit.cls==='A'&&!op.exit.w.isLink);return {i,op,inf:Object.assign({},inf,{names:inf.names.slice()}),turn:op.turn,sector:sectorOf(op.turn),q:qAng(op.turn),closed:opClosed(op),cont:op===cont};});
+  const items=dec.ops.map((op,i)=>{const inf=optInfo(R,dec.x,op,isMotor&&op.exit.cls==='A'&&!op.exit.w.isLink);return {i,op,inf:Object.assign({},inf,{names:inf.names.slice()}),turn:op.turn,sector:sectorOf(op.turn),q:dec.town?Math.round(op.turn/45)*45:qAng(op.turn),closed:opClosed(op),cont:op===cont};});
+  if(dec.town)items.forEach(it=>{it.inf.names=it.inf.names.filter(n=>n.n!==dec.town.name);});
   const best={};items.forEach(it=>it.inf.names.forEach(n=>{const k=n.n;if(!best[k]||(n.km??99)<(best[k].km??99))best[k]={km:n.km,i:it.i};}));
   items.forEach(it=>{const kept=it.inf.names.filter(n=>best[n.n].i===it.i);it.inf.names=kept.length?kept:[];if(!it.inf.names.length)it.inf.names=[{n:it.cont?'Geradeaus':(it.inf.roadName||it.inf.refs[0]||'Richtung '+dirWord(it.turn)),km:null}];});
   return items;
 }
 function isSel(dec,i){return G.q&&G.q.x===dec.x&&G.q.eIn===(dec.eIn?dec.eIn.id:-1)&&G.q.i===i;}
 function namesHTML(names,km){if(!names.length)return `<div class="nm"><span>–</span></div>`;return names.map(n=>`<div class="nm"><span>${esc(n.n)}</span>${km&&n.km!=null?`<em>${n.km<1?'1':Math.round(n.km)} km</em>`:''}</div>`).join('');}
+function townHTML(dec,items){
+  const rows=items.map(it=>{const inset=it.inf.cls==='A';const rt=false;
+    return `<button class="tr ${inset?'inset':''} ${isSel(dec,it.i)?'sel':''}" data-op="${it.i}" ${it.closed?'disabled':''}>${arrowSVG(it.q)}<div class="names">${namesHTML(it.inf.names,true)}</div><div class="bds">${it.inf.refs.map(badge).join('')}${extrasHTML(it)}</div>${it.closed?GESP:''}</button>`;}).join('');
+  return `<div class="tb y anim"><div class="tb-in"><div class="tb-h town-h"><span>Raus aus ${esc(dec.town.name)}</span><small>Pfeile: Norden oben</small></div>${rows}</div></div>`;
+}
 function signHTML(dec){
   const items=signItems(dec);
+  if(dec.town)return {html:townHTML(dec,items),kind:'table'};
   const eIn=dec.eIn;
   const onMotor=eIn&&(eIn.cls==='A');
   const ring=items.some(it=>it.op.ring);
@@ -1093,7 +1143,8 @@ function statusHTML(){
   if(G.stranded)return `<div class="road1"><span class="warnc">Tank leer</span></div>Du bist liegengeblieben.`;
   const e=G.edge||(G.decision&&G.decision.eIn);
   const road=e?(e.w.isLink?'Auf-/Abfahrt':(e.w.ref?badge(e.w.ref)+' ':'')+esc(e.w.name||'')):'';
-  if(G.stop==='start')return `<div class="road1">Start in ${esc(G.startName)}</div><span class="acc">Tippe auf ein Schild, um loszufahren</span>`;
+  if(G.stop==='start')return `<div class="road1">Start in ${esc(G.startName)}</div><span class="acc">Wähle, auf welcher Straße du losfährst</span>`;
+  if(G.stop==='choose'&&G.decision&&G.decision.town)return `<div class="road1">In ${esc(G.decision.town.name)}</div><span class="acc">Wähle einen Ortsausgang</span>`;
   if(G.stop==='choose')return `<div class="road1">${road||'Kreuzung'}</div><span class="acc">Wähle eine Richtung am Schild</span>`;
   if(G.stop==='dead')return `<div class="road1">Sackgasse</div>Tippe auf „Wenden“.`;
   return `<div class="road1">${road||'Unterwegs'}</div>${G.driven.toFixed(1).replace('.',',')} km · ${G.turns} Abzweig${G.turns===1?'':'e'}`;
@@ -1286,8 +1337,9 @@ function showCoach(){
   const r=t.getBoundingClientRect(),g=document.querySelector('.game').getBoundingClientRect();
   const c=document.createElement('div');c.className='coach';c.id='coach';
   const x=Math.min(r.left+r.width*0.62,g.width-70),y=r.top+r.height/2;
+  const box=(t.closest('.tb,.vw,.mast')||t).getBoundingClientRect();const by=Math.min(box.bottom+14,innerHeight-330);
   c.innerHTML=`<div class="coach-ring" style="left:${x}px;top:${y}px"></div><div class="coach-hand" style="left:${x}px;top:${y}px">${svgI('<path d="M18 11V6a2 2 0 0 0-4 0v5M14 10V4a2 2 0 0 0-4 0v6M10 10.5V6a2 2 0 0 0-4 0v8M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>')}</div>
-    <div class="coach-bubble glass" style="top:${Math.min(y+r.height/2+18,innerHeight-260)}px"><b>Tippe auf ein Schild</b><span>Dann fährst du in diese Richtung bis zur nächsten Kreuzung – dort hältst du wieder an.</span></div>`;
+    <div class="coach-bubble glass" style="top:${by}px"><b>Wähle deine Ausfallstraße</b><span>Tippe auf eine Zeile – du fährst direkt zum Ortsausgang und hältst an der nächsten Kreuzung wieder an.</span></div>`;
   document.querySelector('.game').appendChild(c);
 }
 function hideCoach(){const c=document.getElementById('coach');if(c){c.classList.add('out');setTimeout(()=>c.remove(),250);}if(!save.coached){save.coached=true;persist();}}
